@@ -46,10 +46,10 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <!-- Import bysquare as ES Module -->
     <script type="module">
-        // Import the bysquare library
+        // Import bysquare knižnice
         import { encode, decode, PaymentOptions, CurrencyCode } from "https://esm.sh/bysquare@latest";
 
-        // Make it available globally so our other scripts can use it
+        // Sprístupníme knižnicu globálne, aby ju mohli ostatné skripty používať
         window.bysquareModule = {
             encode,
             decode,
@@ -57,10 +57,10 @@
             CurrencyCode
         };
 
-        // Signal that the module is loaded
+        // Signalizácia, že modul je načítaný
         window.bysquareLoaded = true;
 
-        // Log to verify it's loaded
+        // Log pre overenie načítania
         console.log('Bysquare module loaded successfully');
     </script>
     <!-- Tailwind CSS -->
@@ -72,17 +72,17 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('sw.js').then(function (registration) {
-                    // Registration was successful
+                    // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    // Track successful service worker registration
+                    // Sledovanie úspešnej registrácie service workera
                     dataLayer.push({
                         'event': 'service_worker_registered',
                         'sw_scope': registration.scope
                     });
                 }, function (err) {
-                    // registration failed :(
+                    // registrácia zlyhala :(
                     console.log('ServiceWorker registration failed: ', err);
-                    // Track failed service worker registration
+                    // Sledovanie neúspešnej registrácie service workera
                     dataLayer.push({
                         'event': 'service_worker_registration_failed',
                         'error': err.toString()
@@ -403,7 +403,7 @@
     </div>
 
     <script>
-        // In-memory storage (replace with localStorage in real implementation)
+        // Úložisko v pamäti (v reálnej implementácii nahradené lokálnym úložiskom)
         let settings = {
             iban: '',
             swift: '',

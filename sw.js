@@ -24,10 +24,10 @@ self.addEventListener('install', function(event) {
 
 // Cache a network stratégia
 self.addEventListener('fetch', function(event) {
-  // Skip caching for non-HTTP/HTTPS URLs (like chrome-extension://)
+  // Preskočenie cachevania pre non-HTTP/HTTPS URL (ako chrome-extension://)
   const url = new URL(event.request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    return; // Don't attempt to cache non-HTTP URLs
+    return; // Nepokúšaj sa cachovať non-HTTP URL
   }
   
   event.respondWith(
@@ -53,7 +53,7 @@ self.addEventListener('fetch', function(event) {
                 try {
                   cache.put(event.request, responseToCache);
                 } catch (e) {
-                  console.error('Failed to cache:', e);
+                  console.error('Zlyhanie pri cachovaní:', e);
                 }
               });
 

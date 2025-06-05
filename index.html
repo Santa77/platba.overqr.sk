@@ -37,6 +37,42 @@
 
     <!-- PWA podpora -->
     <link rel="manifest" href="manifest.json?v=1.0.4">
+    
+    <!-- QR kód s logom - štýly -->
+    <style>
+        /* Štýl pre kontajner QR kódu */
+        .qr-with-logo {
+            position: relative;
+            overflow: visible;
+            padding: 18px 18px 60px 18px !important; /* top right bottom left */
+            border: 3px solid rgba(176, 216, 255, 0.9); /* Svetlomodrý rám s priehľadnosťou */
+            border-radius: 10px;
+            background-color: white;
+        }
+        
+        /* PAY by square logo pod QR kódom */
+        .qr-with-logo::after {
+            content: "";
+            position: absolute;
+            bottom: 10px !important; /* Posunutie pod QR kód */
+            left: 0;
+            width: 100%;
+            height: 100% !important;
+            background-image: url('images/pay-bottom-dark.png');
+            background-size: 315px auto; /* Väčšia šírka pre logo */
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        /* QR kód sa zobrazí nad logom */
+        #qr-code > * {
+            position: relative;
+            z-index: 1;
+            margin: auto; /* Vycentrovanie QR kódu */
+        }
+    </style>
     <link rel="icon" href="logo.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -400,7 +436,7 @@
                         <i class="fas fa-spinner fa-pulse text-4xl text-gray-400"></i>
                         <p class="mt-3 text-gray-500">Generujem QR kód...</p>
                     </div>
-                    <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden flex justify-center"></div>
+                    <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden flex justify-center relative qr-with-logo"></div>
                     <div id="qr-info"
                         class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
                         <div class="grid grid-cols-1 gap-2">
@@ -708,7 +744,7 @@
                             // Pridáme variabilný symbol, ak je zadaný
                             ...(vs && vs.trim() !== '' && { variableSymbol: vs.toString() }),
                             // Pridáme poznámku, ak je zadaná
-                            ...(note && note.trim() !== '' && { paymentNote: note }),
+                            ...(note && note.trim() !== '' && { paymentNote: note, originatorsReferenceInformation: note }),
                             // Pridáme bankové účty
                             bankAccounts: [
                                 {
@@ -760,7 +796,11 @@
             // Get form values
             const amount = document.getElementById('amount').value;
             const vs = generateVS();
-            const note = document.getElementById('note').value;
+            let note = document.getElementById('note').value;
+            // Pridať prefix 'PQR:' ak tam ešte nie je
+            if (!note.trim().startsWith('PQR:')) {
+                note = 'PQR:' + note.trim();
+            }
 
             // Track payment form interaction
             dataLayer.push({

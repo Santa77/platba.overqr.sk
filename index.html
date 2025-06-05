@@ -104,13 +104,13 @@
                 }
 
                 // Listen for online/offline events
-                window.addEventListener('online', function() {
+                window.addEventListener('online', function () {
                     dataLayer.push({
                         'event': 'app_online'
                     });
                 });
-                
-                window.addEventListener('offline', function() {
+
+                window.addEventListener('offline', function () {
                     dataLayer.push({
                         'event': 'offline_mode_entered'
                     });
@@ -230,12 +230,23 @@
                 j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
                     'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-56CKR4RC');</script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6CLTP3Q8GS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-6CLTP3Q8GS');
+    </script>
     <!-- End Google Tag Manager -->
 </head>
 
 <body class="min-h-screen animated-gradient text-gray-800 p-4 antialiased">
     <!-- Notifikácia o aktualizácii -->
-    <div id="update-notification" class="hidden fixed top-0 left-0 right-0 bg-secondary-600 text-white text-center p-2 z-50"></div>
+    <div id="update-notification"
+        class="hidden fixed top-0 left-0 right-0 bg-secondary-600 text-white text-center p-2 z-50"></div>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56CKR4RC" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -246,7 +257,8 @@
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                 <i class="fas fa-qrcode mr-2"></i> Platba OverQR
             </h1>
-            <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho <span id="app-version-display" class="text-sm opacity-70"></span></p>
+            <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho <span
+                    id="app-version-display" class="text-sm opacity-70"></span></p>
         </header>
 
         <!-- Hlavný obsah - okno 1 a okno 2, vždy len jedno viditeľné -->
@@ -389,7 +401,8 @@
                         <p class="mt-3 text-gray-500">Generujem QR kód...</p>
                     </div>
                     <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden flex justify-center"></div>
-                    <div id="qr-info" class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
+                    <div id="qr-info"
+                        class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
                         <div class="grid grid-cols-1 gap-2">
                             <p><strong>Suma:</strong> <span id="qr-amount"></span></p>
                             <p><strong>IBAN:</strong> <span id="qr-iban"></span></p>
@@ -444,7 +457,7 @@
 
                 document.getElementById('payment-tab').classList.remove('bg-white', 'text-primary-600');
                 document.getElementById('payment-tab').classList.add('bg-gray-100', 'bg-opacity-50', 'text-gray-600');
-                
+
                 // Track settings tab opened
                 dataLayer.push({
                     'event': 'settings_opened'
@@ -498,7 +511,7 @@
             const validatedIban = validateIBAN(inputIban);
             if (!validatedIban) {
                 document.getElementById('iban-error').textContent = 'Zadajte platný IBAN';
-                
+
                 // Track IBAN validation error
                 dataLayer.push({
                     'event': 'iban_validation_error',
@@ -515,7 +528,7 @@
             try {
                 localStorage.setItem('paybySquareSettings', JSON.stringify(settings));
                 console.log('Nastavenia uložené do localStorage:', settings);
-                
+
                 // Track successful settings save
                 dataLayer.push({
                     'event': 'settings_saved',
@@ -525,7 +538,7 @@
                 });
             } catch (error) {
                 console.error('Chyba pri ukladaní nastavení do localStorage:', error);
-                
+
                 // Track localStorage error
                 dataLayer.push({
                     'event': 'settings_save_error',
@@ -748,7 +761,7 @@
             const amount = document.getElementById('amount').value;
             const vs = generateVS();
             const note = document.getElementById('note').value;
-            
+
             // Track payment form interaction
             dataLayer.push({
                 'event': 'payment_form_started',
@@ -758,7 +771,7 @@
             // Check if settings are available
             if (!settings.iban) {
                 alert('Prosím, nastavte IBAN v nastaveniach.');
-                
+
                 // Track missing settings error
                 dataLayer.push({
                     'event': 'qr_generation_error',
@@ -770,28 +783,28 @@
             // Check if bysquare module is loaded
             if (!window.bysquareLoaded) {
                 console.log('Bysquare module not yet loaded, waiting...');
-                
+
                 // Track library loading wait
                 dataLayer.push({
                     'event': 'bysquare_library_loading',
                     'action': 'waiting'
                 });
-                
+
                 // Wait a moment for the module to load
                 setTimeout(() => {
                     if (window.bysquareLoaded) {
                         console.log('Bysquare module loaded after delay, continuing...');
-                        
+
                         // Track delayed library load success
                         dataLayer.push({
                             'event': 'bysquare_library_load_success',
                             'load_type': 'delayed'
                         });
-                        
+
                         continueWithQRGeneration();
                     } else {
                         alert('Knižnica pre generovanie PayBySquare kódu sa nepodarilo načítať. Prosím, obnovte stránku a skúste znova.');
-                        
+
                         // Track library load error
                         dataLayer.push({
                             'event': 'bysquare_library_load_error'
@@ -800,7 +813,7 @@
                 }, 1000);
                 return;
             }
-            
+
             // Track successful library detection
             dataLayer.push({
                 'event': 'bysquare_library_load_success',
@@ -812,13 +825,13 @@
             function continueWithQRGeneration() {
                 // Start performance timing for QR generation
                 const qrGenerationStartTime = performance.now();
-                
+
                 // Track amount input
                 dataLayer.push({
                     'event': 'payment_amount_entered',
                     'amount': parseFloat(amount)
                 });
-                
+
                 // Generate PayBySquare string
                 const payBySquareString = generatePayBySquareString(
                     amount,
@@ -840,13 +853,13 @@
                     });
                     return;
                 }
-                
+
                 // Track variable symbol generation
                 dataLayer.push({
                     'event': 'vs_auto_generated',
                     'vs': vs
                 });
-                
+
                 // Track note field usage
                 if (note && note.trim() !== '') {
                     dataLayer.push({
@@ -856,7 +869,7 @@
 
                 // Get QR container
                 const qrContainer = document.getElementById('qr-code');
-                
+
                 /* DISABLED: Amount range categorization as requested
                 // Categorize payment amount for analytics
                 const paymentAmount = parseFloat(amount);
@@ -910,10 +923,10 @@
                     document.getElementById('qr-vs').textContent = vs;
                     document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                     document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
-                    
+
                     // Calculate QR generation time
                     const qrGenerationTime = performance.now() - qrGenerationStartTime;
-                    
+
                     // Track successful QR generation
                     dataLayer.push({
                         'event': 'qr_code_generated',
@@ -949,21 +962,21 @@
                         img.onclick = backToPaymentForm;
 
                         qrContainer.appendChild(img);
-                        
+
                         // Zobrazíme QR kód a informácie
                         document.getElementById('qr-placeholder').classList.add('hidden');
                         document.getElementById('qr-code').classList.remove('hidden');
                         document.getElementById('qr-info').classList.remove('hidden');
-                        
+
                         // Zobraziť platebné informácie
                         document.getElementById('qr-amount').textContent = `${parseFloat(amount).toFixed(2)} €`;
                         document.getElementById('qr-vs').textContent = vs;
                         document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                         document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
-                        
+
                         // Calculate QR generation time
                         const qrGenerationTime = performance.now() - qrGenerationStartTime;
-                        
+
                         // Track successful QR generation with fallback method
                         dataLayer.push({
                             'event': 'qr_code_generated',
@@ -973,17 +986,17 @@
                             'payment_amount': parseFloat(amount),
                             'has_note': note.trim() !== ''
                         });
-                        
+
                         // Aktualizujeme zobrazenie VS pre ďalšie použitie
                         updateVSDisplay();
-                        
+
                         // Skryjeme okno 1 a zobrazíme okno 2
                         document.getElementById('payment-panel').classList.add('hidden');
                         document.getElementById('qr-panel').classList.remove('hidden');
                     } catch (backupError) {
                         console.error('Záložné riešenie QR kódu zlyhalo:', backupError);
                         alert('Nepodarilo sa vygenerovať QR kód. Skontrolujte konzolu pre viac informácií.');
-                        
+
                         // Track fallback QR generation error
                         dataLayer.push({
                             'event': 'qr_generation_error',
@@ -1051,9 +1064,9 @@
 
         // Kód pre detekciu aktualizácií aplikácie
         const APP_VERSION = '1.0.2';
-        
+
         // Zobrazenie verzie v hlavičke
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const versionDisplay = document.getElementById('app-version-display');
             if (versionDisplay) {
                 versionDisplay.textContent = `v${APP_VERSION}`;
@@ -1062,18 +1075,18 @@
 
         // Čakanie na správy od service workera
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', function(event) {
+            navigator.serviceWorker.addEventListener('message', function (event) {
                 if (event.data && event.data.type === 'APP_VERSION') {
                     console.log('App version from service worker:', event.data.version);
                 }
-                
+
                 if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
                     // Zobraziť užívateľovi notifikáciu o dostupnej aktualizácii
                     const notification = document.getElementById('update-notification');
                     if (notification) {
                         notification.innerHTML = `Je dostupná nová verzia (${event.data.newVersion})! <button class="bg-white text-secondary-700 px-2 py-1 rounded ml-3 font-medium" onclick="window.location.reload()">Aktualizovať teraz</button>`;
                         notification.classList.remove('hidden');
-                        
+
                         // Sledovať notifikáciu v GTM
                         dataLayer.push({
                             'event': 'update_available',
@@ -1085,7 +1098,7 @@
             });
 
             // Kontrola aktualizácií po načítaní stránky
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 setTimeout(() => {
                     if (navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage({

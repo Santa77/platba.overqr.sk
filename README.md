@@ -2,12 +2,12 @@
 
 <div align="center">
   
-  ![Verzia](https://img.shields.io/badge/verzia-1.0.0-blue.svg)
+  ![Verzia](https://img.shields.io/badge/verzia-1.0.6-blue.svg)
   ![PWA Ready](https://img.shields.io/badge/PWA-Ready-brightgreen.svg)
   ![Kompatibilita](https://img.shields.io/badge/kompatibilita-iOS%20%7C%20Android%20%7C%20Desktop-lightgrey.svg)
   
   <br>
-
+  
   <h3>Moderná platforma pre generovanie platobných QR kódov vo formáte PayBySquare</h3>
 
   <p>Vytvorte QR kód pre bankové platby na Slovensku jednoducho a rýchlo, bez nutnosti inštalácie aplikácie</p>
@@ -134,6 +134,8 @@ python -m http.server 8080
 ├── 📄 index.html              # Hlavný HTML súbor
 ├── 📄 manifest.json           # PWA manifest
 ├── 📄 sw.js                   # Service Worker pre offline funkcionalitu
+├── 📄 version.json            # Informácie o verzii aplikácie
+├── 📄 update-version-v2.ps1   # PowerShell skript pre aktualizáciu verzie
 ├── 📄 logo.svg                # Zdrojové logo
 ├── 📄 favicon.ico             # Favicon pre prehliadače
 ├── 📄 apple-touch-icon.png    # Ikona pre iOS zariadenia
@@ -141,6 +143,39 @@ python -m http.server 8080
 ├── 📂 icons/                  # PWA ikony v rôznych veľkostiach
 └── 📂 images/                 # obrázky pre README.md
 
+```
+
+## 🔄 Aktualizácia verzie aplikácie
+
+Aplikácia používa číslo verzie uvedené v rôznych súboroch:
+
+- **version.json**: Hlavný zdroj pravdy pre verziu aplikácie
+- **sw.js**: Konštanta APP_VERSION
+- **manifest.json**: Verzia aplikácie a query parametre v URL
+- **index.html**: Query parametre pre manifest a service worker, a JavaScript konštanta APP_VERSION
+
+Pre aktualizáciu verzie vo všetkých súboroch naraz môžete použiť pripravený PowerShell skript:
+
+```powershell
+# Aktualizácia na novú verziu (napr. 1.0.7)
+.\update-version.ps1 -NewVersion "1.0.7"
+```
+
+Skript automaticky:
+1. Vytvorí zálohu aktuálnych súborov pred zmenou
+2. Aktualizuje všetky výskyty verzie vo všetkých súboroch
+3. Aktualizuje dátum vydania v version.json
+4. Navrhne príkazy pre commit, vytvorenie tagu a push zmien
+
+Po spustení skriptu je potrebné zmeny commitnúť, vytvoriť tag a pushnúť do repozitára:
+
+```bash
+# Po úspešnej aktualizácii verzie
+git add version.json sw.js manifest.json index.html
+git commit -m "Aktualizácia verzie na X.Y.Z"
+git tag -a vX.Y.Z -m "Verzia X.Y.Z"
+git push
+git push --tags
 ```
 
 ## 🤝 Prispenie k projektu

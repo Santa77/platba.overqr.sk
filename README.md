@@ -131,15 +131,15 @@ python -m http.server 8080
 
 ```
 📂 Štruktúra projektu
-├── 📄 index.html         # Hlavný HTML súbor
-├── 📄 manifest.json      # PWA manifest
-├── 📄 sw.js             # Service Worker pre offline funkcionalitu
-├── 📄 logo.svg          # Zdrojové logo
-├── 📄 favicon.ico       # Favicon pre prehliadače
-├── 📄 apple-touch-icon.png  # Ikona pre iOS zariadenia
-├── 📄 tailwindcss.3.4.16.js  # Tailwind CSS
-├── 📂 icons/            # PWA ikony v rôznych veľkostiach
-└── 📂 images/            # obrázky pre README.md
+├── 📄 index.html              # Hlavný HTML súbor
+├── 📄 manifest.json           # PWA manifest
+├── 📄 sw.js                   # Service Worker pre offline funkcionalitu
+├── 📄 logo.svg                # Zdrojové logo
+├── 📄 favicon.ico             # Favicon pre prehliadače
+├── 📄 apple-touch-icon.png    # Ikona pre iOS zariadenia
+├── 📄 tailwindcss.3.4.16.js   # Tailwind CSS
+├── 📂 icons/                  # PWA ikony v rôznych veľkostiach
+└── 📂 images/                 # obrázky pre README.md
 
 ```
 
@@ -159,6 +159,10 @@ Príspevky sú vítané! Ak chcete prispieť k projektu:
 - Žiadne údaje nie sú odosielané na externé servery
 - Nastavenia sú uložené len vo vašom prehliadači (localStorage)
 - Aplikácia funguje aj v režime offline
+
+## 📊 Telemetria
+
+Aplikácia využíva Google Tag Manager pre anonymné zbieranie údajov o používaní, čo nám pomáha lepšie porozumieť, ako užívatelia pracujú s aplikáciou a umožňuje nám zlepšovať používateľský zážitok bez zbierania osobných údajov. Podrobný zoznam sledovaných udalostí nájdete v [GTM.md](GTM.md).
 
 ## ✍️ Autor
 

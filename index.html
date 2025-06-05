@@ -74,9 +74,60 @@
                 navigator.serviceWorker.register('sw.js').then(function (registration) {
                     // Registration was successful
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    // Track successful service worker registration
+                    dataLayer.push({
+                        'event': 'service_worker_registered',
+                        'sw_scope': registration.scope
+                    });
                 }, function (err) {
                     // registration failed :(
                     console.log('ServiceWorker registration failed: ', err);
+                    // Track failed service worker registration
+                    dataLayer.push({
+                        'event': 'service_worker_registration_failed',
+                        'error': err.toString()
+                    });
+                });
+
+                // Track app open event
+                const isReturningUser = localStorage.getItem('paybySquareSettings') !== null;
+                dataLayer.push({
+                    'event': 'app_opened',
+                    'user_type': isReturningUser ? 'returning' : 'new'
+                });
+
+                // Track if app is in offline mode
+                if (!navigator.onLine) {
+                    dataLayer.push({
+                        'event': 'offline_mode_entered'
+                    });
+                }
+
+                // Listen for online/offline events
+                window.addEventListener('online', function() {
+                    dataLayer.push({
+                        'event': 'app_online'
+                    });
+                });
+                
+                window.addEventListener('offline', function() {
+                    dataLayer.push({
+                        'event': 'offline_mode_entered'
+                    });
+                });
+
+                // Track if app was launched from installed PWA
+                if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                    dataLayer.push({
+                        'event': 'app_installed'
+                    });
+                }
+
+                // Track app load time
+                const loadTime = performance.now();
+                dataLayer.push({
+                    'event': 'app_load_time',
+                    'load_time_ms': Math.round(loadTime)
                 });
             });
         }
@@ -382,12 +433,22 @@
 
                 document.getElementById('settings-tab').classList.remove('bg-white', 'text-primary-600');
                 document.getElementById('settings-tab').classList.add('bg-gray-100', 'bg-opacity-50', 'text-gray-600');
+
+                // Track payment tab opened
+                dataLayer.push({
+                    'event': 'payment_form_opened'
+                });
             } else {
                 document.getElementById('settings-tab').classList.remove('bg-gray-100', 'bg-opacity-50', 'text-gray-600');
                 document.getElementById('settings-tab').classList.add('bg-white', 'text-primary-600');
 
                 document.getElementById('payment-tab').classList.remove('bg-white', 'text-primary-600');
                 document.getElementById('payment-tab').classList.add('bg-gray-100', 'bg-opacity-50', 'text-gray-600');
+                
+                // Track settings tab opened
+                dataLayer.push({
+                    'event': 'settings_opened'
+                });
             }
         }
 
@@ -426,10 +487,23 @@
             const swift = document.getElementById('swift').value.trim();
             const recipient = document.getElementById('recipient').value.trim();
 
+            // Track form interaction
+            dataLayer.push({
+                'event': 'settings_form_submitted',
+                'has_swift': swift.trim() !== '',
+                'has_recipient': recipient.trim() !== ''
+            });
+
             // Validate IBAN and get the cleaned version (without spaces)
             const validatedIban = validateIBAN(inputIban);
             if (!validatedIban) {
-                document.getElementById('iban-error').textContent = 'Neplatný IBAN formát';
+                document.getElementById('iban-error').textContent = 'Zadajte platný IBAN';
+                
+                // Track IBAN validation error
+                dataLayer.push({
+                    'event': 'iban_validation_error',
+                    'input_length': inputIban.length
+                });
                 return;
             }
 
@@ -441,16 +515,35 @@
             try {
                 localStorage.setItem('paybySquareSettings', JSON.stringify(settings));
                 console.log('Nastavenia uložené do localStorage:', settings);
+                
+                // Track successful settings save
+                dataLayer.push({
+                    'event': 'settings_saved',
+                    'country_code': validatedIban.slice(0, 2),
+                    'has_swift': swift.trim() !== '',
+                    'has_recipient': recipient.trim() !== ''
+                });
             } catch (error) {
                 console.error('Chyba pri ukladaní nastavení do localStorage:', error);
+                
+                // Track localStorage error
+                dataLayer.push({
+                    'event': 'settings_save_error',
+                    'error_type': 'localStorage_error'
+                });
             }
 
             document.getElementById('settings-success').textContent = 'Nastavenia uložené!';
             setTimeout(() => {
                 document.getElementById('settings-success').textContent = '';
-            }, 3000);
+            }, 2000);
 
-            updateVSDisplay();
+            // Uložíme a prejdeme na záložku platby
+            setTimeout(() => {
+                switchTab('payment');
+                document.getElementById('settings-success').classList.add('hidden');
+                document.getElementById('settings-success').textContent = '';
+            }, 1000);
         }
 
         function validateIBAN(iban) {
@@ -637,6 +730,11 @@
             // Zobrazíme platbný panel
             document.getElementById('payment-panel').classList.remove('hidden');
 
+            // Track return to payment form
+            dataLayer.push({
+                'event': 'return_to_payment_form'
+            });
+
             // Vymažeme hodnoty vo formulári
             document.getElementById('amount').value = '';
             document.getElementById('note').value = '';
@@ -650,31 +748,77 @@
             const amount = document.getElementById('amount').value;
             const vs = generateVS();
             const note = document.getElementById('note').value;
+            
+            // Track payment form interaction
+            dataLayer.push({
+                'event': 'payment_form_started',
+                'has_note': note.trim() !== ''
+            });
 
             // Check if settings are available
             if (!settings.iban) {
                 alert('Prosím, nastavte IBAN v nastaveniach.');
+                
+                // Track missing settings error
+                dataLayer.push({
+                    'event': 'qr_generation_error',
+                    'error_type': 'missing_iban'
+                });
                 return;
             }
 
             // Check if bysquare module is loaded
             if (!window.bysquareLoaded) {
                 console.log('Bysquare module not yet loaded, waiting...');
+                
+                // Track library loading wait
+                dataLayer.push({
+                    'event': 'bysquare_library_loading',
+                    'action': 'waiting'
+                });
+                
                 // Wait a moment for the module to load
                 setTimeout(() => {
                     if (window.bysquareLoaded) {
                         console.log('Bysquare module loaded after delay, continuing...');
+                        
+                        // Track delayed library load success
+                        dataLayer.push({
+                            'event': 'bysquare_library_load_success',
+                            'load_type': 'delayed'
+                        });
+                        
                         continueWithQRGeneration();
                     } else {
                         alert('Knižnica pre generovanie PayBySquare kódu sa nepodarilo načítať. Prosím, obnovte stránku a skúste znova.');
+                        
+                        // Track library load error
+                        dataLayer.push({
+                            'event': 'bysquare_library_load_error'
+                        });
                     }
                 }, 1000);
                 return;
             }
+            
+            // Track successful library detection
+            dataLayer.push({
+                'event': 'bysquare_library_load_success',
+                'load_type': 'immediate'
+            });
 
             continueWithQRGeneration();
 
             function continueWithQRGeneration() {
+                // Start performance timing for QR generation
+                const qrGenerationStartTime = performance.now();
+                
+                // Track amount input
+                dataLayer.push({
+                    'event': 'payment_amount_entered',
+                    'amount': parseFloat(amount)
+                });
+                
                 // Generate PayBySquare string
                 const payBySquareString = generatePayBySquareString(
                     amount,
@@ -689,11 +833,45 @@
 
                 // If PayBySquare string generation failed, stop here
                 if (!payBySquareString) {
+                    // Track QR generation error
+                    dataLayer.push({
+                        'event': 'qr_generation_error',
+                        'error_type': 'bysquare_generation_failed'
+                    });
                     return;
+                }
+                
+                // Track variable symbol generation
+                dataLayer.push({
+                    'event': 'vs_auto_generated',
+                    'vs': vs
+                });
+                
+                // Track note field usage
+                if (note && note.trim() !== '') {
+                    dataLayer.push({
+                        'event': 'note_field_used'
+                    });
                 }
 
                 // Get QR container
                 const qrContainer = document.getElementById('qr-code');
+                
+                /* DISABLED: Amount range categorization as requested
+                // Categorize payment amount for analytics
+                const paymentAmount = parseFloat(amount);
+                let amountCategory;
+                
+                if (paymentAmount <= 10) amountCategory = '0-10';
+                else if (paymentAmount <= 50) amountCategory = '10-50';
+                else amountCategory = '50+';
+                
+                // Track amount category
+                dataLayer.push({
+                    'event': 'qr_generation_amount_range',
+                    'amount_category': amountCategory
+                });
+                */
 
                 try {
                     // Najprv vyčistíme kontajner
@@ -732,6 +910,18 @@
                     document.getElementById('qr-vs').textContent = vs;
                     document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                     document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
+                    
+                    // Calculate QR generation time
+                    const qrGenerationTime = performance.now() - qrGenerationStartTime;
+                    
+                    // Track successful QR generation
+                    dataLayer.push({
+                        'event': 'qr_code_generated',
+                        'generation_time_ms': Math.round(qrGenerationTime),
+                        'qr_method': 'qrcode-generator',
+                        'payment_amount': parseFloat(amount),
+                        'has_note': note.trim() !== ''
+                    });
 
                     // Aktualizujeme zobrazenie VS pre ďalšie použitie
                     updateVSDisplay();
@@ -759,27 +949,47 @@
                         img.onclick = backToPaymentForm;
 
                         qrContainer.appendChild(img);
-
+                        
                         // Zobrazíme QR kód a informácie
                         document.getElementById('qr-placeholder').classList.add('hidden');
                         document.getElementById('qr-code').classList.remove('hidden');
                         document.getElementById('qr-info').classList.remove('hidden');
-
-                        // Zobraziť platobné informácie
+                        
+                        // Zobraziť platebné informácie
                         document.getElementById('qr-amount').textContent = `${parseFloat(amount).toFixed(2)} €`;
                         document.getElementById('qr-vs').textContent = vs;
                         document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                         document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
-
+                        
+                        // Calculate QR generation time
+                        const qrGenerationTime = performance.now() - qrGenerationStartTime;
+                        
+                        // Track successful QR generation with fallback method
+                        dataLayer.push({
+                            'event': 'qr_code_generated',
+                            'generation_time_ms': Math.round(qrGenerationTime),
+                            'qr_method': 'google_chart_api',
+                            'fallback_qr_method_used': true,
+                            'payment_amount': parseFloat(amount),
+                            'has_note': note.trim() !== ''
+                        });
+                        
                         // Aktualizujeme zobrazenie VS pre ďalšie použitie
                         updateVSDisplay();
-
+                        
                         // Skryjeme okno 1 a zobrazíme okno 2
                         document.getElementById('payment-panel').classList.add('hidden');
                         document.getElementById('qr-panel').classList.remove('hidden');
                     } catch (backupError) {
                         console.error('Záložné riešenie QR kódu zlyhalo:', backupError);
                         alert('Nepodarilo sa vygenerovať QR kód. Skontrolujte konzolu pre viac informácií.');
+                        
+                        // Track fallback QR generation error
+                        dataLayer.push({
+                            'event': 'qr_generation_error',
+                            'error_type': 'fallback_method_failed',
+                            'error_details': backupError.toString()
+                        });
                     }
                 }
             }

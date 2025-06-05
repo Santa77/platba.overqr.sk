@@ -1,20 +1,20 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Návrh nového prvku
+about: Navrhnite novú funkciu pre tento projekt
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Súvisí váš návrh s nejakým problémom? Prosím, popíšte.**
+Jasný a stručný popis problému. Napr. Vždy ma frustruje, keď [...]
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Popíšte riešenie, ktoré by ste chceli**
+Jasný a stručný popis toho, čo by sa podľa vás malo stať.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Popíšte alternatívy, ktoré ste zvážili**
+Jasný a stručný popis všetkých alternatívnych riešení alebo funkcionalit, ktoré ste zvážili.
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Ďalšie informácie**
+Pridajte akékoľvek ďalšie informácie alebo snímky obrazovky o návrhu funkcionality.

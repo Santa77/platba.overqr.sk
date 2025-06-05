@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "releaseDate": "2025-06-05",
-  "notes": "Pridaná detekcia aktualizácií aplikácie"
+  "notes": "Opravené zobrazenie QR kódu a pridané zobrazenie verzie aplikácie"
 }

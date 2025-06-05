@@ -246,7 +246,7 @@
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                 <i class="fas fa-qrcode mr-2"></i> Platba OverQR
             </h1>
-            <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho</p>
+            <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho <span id="app-version-display" class="text-sm opacity-70"></span></p>
         </header>
 
         <!-- Hlavný obsah - okno 1 a okno 2, vždy len jedno viditeľné -->
@@ -375,17 +375,26 @@
             </div>
 
             <!-- Okno 2: Panel s QR kódom (skryté na začiatku) -->
-            <div id="qr-panel"
-                        </div>
-                        <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden"></div>
-                        <div id="qr-info"
-                            class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
-                            <div class="grid grid-cols-1 gap-2">
-                                <p><strong>Suma:</strong> <span id="qr-amount"></span></p>
-                                <p><strong>IBAN:</strong> <span id="qr-iban"></span></p>
-                                <p><strong>VS:</strong> <span id="qr-vs"></span></p>
-                                <p><strong>Poznámka:</strong> <span id="qr-note"></span></p>
-                            </div>
+            <div id="qr-panel" class="glassmorphism rounded-2xl shadow-glass hidden">
+                <div class="p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-primary-700">Váš QR kód na platbu</h2>
+                        <button onclick="backToPaymentForm()"
+                            class="py-1 px-3 text-sm text-gray-600 hover:text-primary-700 hover:bg-gray-100 rounded-md transition">
+                            <i class="fas fa-arrow-left mr-1"></i> Späť
+                        </button>
+                    </div>
+                    <div id="qr-placeholder" class="text-center p-10">
+                        <i class="fas fa-spinner fa-pulse text-4xl text-gray-400"></i>
+                        <p class="mt-3 text-gray-500">Generujem QR kód...</p>
+                    </div>
+                    <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden flex justify-center"></div>
+                    <div id="qr-info" class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
+                        <div class="grid grid-cols-1 gap-2">
+                            <p><strong>Suma:</strong> <span id="qr-amount"></span></p>
+                            <p><strong>IBAN:</strong> <span id="qr-iban"></span></p>
+                            <p><strong>VS:</strong> <span id="qr-vs"></span></p>
+                            <p><strong>Poznámka:</strong> <span id="qr-note"></span></p>
                         </div>
                     </div>
                 </div>
@@ -1041,7 +1050,15 @@
         }
 
         // Kód pre detekciu aktualizácií aplikácie
-        const APP_VERSION = '1.0.1';
+        const APP_VERSION = '1.0.2';
+        
+        // Zobrazenie verzie v hlavičke
+        document.addEventListener('DOMContentLoaded', function() {
+            const versionDisplay = document.getElementById('app-version-display');
+            if (versionDisplay) {
+                versionDisplay.textContent = `v${APP_VERSION}`;
+            }
+        });
 
         // Čakanie na správy od service workera
         if ('serviceWorker' in navigator) {

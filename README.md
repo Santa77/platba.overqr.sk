@@ -160,16 +160,6 @@ Príspevky sú vítané! Ak chcete prispieť k projektu:
 - Nastavenia sú uložené len vo vašom prehliadači (localStorage)
 - Aplikácia funguje aj v režime offline
 
-## 📜 Licencia
-
-Tento projekt je licencovaný pod MIT licenciou - viac detailov nájdete v [LICENSE](LICENSE) súbore.
-
 ## ✍️ Autor
 
-Vytvorené s ❤️ na Slovensku.
-
----
-
-<p align="center">
-  <sub>Platba OverQR v1.0.0 | Copyright © 2025 by Slavoj SANTA Hruška</sub>
-</p>
+Vytvorené s ❤️ na Slovensku. Copyright © 2025 by Slavoj SANTA Hruška.

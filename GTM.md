@@ -48,6 +48,7 @@ Tento dokument obsahuje zoznam všetkých eventov, ktoré sú implementované v 
 
 | Event | Popis | Parametre |
 |-------|-------|-----------|
+| **update_available** | Dostupná nová verzia aplikácie | `current_version`: aktuálna verzia, `new_version`: nová verzia |
 | **bysquare_library_loading** | Čakanie na načítanie bysquare knižnice | `action`: 'waiting' |
 | **bysquare_library_load_success** | Úspešné načítanie bysquare knižnice | `load_type`: 'immediate' alebo 'delayed' |
 | **bysquare_library_load_error** | Chyba pri načítaní bysquare knižnice | - |

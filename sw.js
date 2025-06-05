@@ -1,4 +1,5 @@
-const CACHE_NAME = 'overqr-v1';
+const APP_VERSION = '1.0.1';
+const CACHE_NAME = `overqr-v${APP_VERSION}`;
 const urlsToCache = [
   '/',
   '/index.html',
@@ -76,6 +77,51 @@ self.addEventListener('activate', function(event) {
           }
         })
       );
+    }).then(() => {
+      // Oznámiť verziu klientom
+      return self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'APP_VERSION',
+            version: APP_VERSION
+          });
+        });
+      });
     })
   );
+});
+
+// Funkcia na kontrolu aktualizácií
+async function checkForUpdates() {
+  // Stiahnite verziu z version.json súboru na serveri
+  try {
+    const response = await fetch('/version.json?nocache=' + new Date().getTime());
+    if (response.ok) {
+      const data = await response.json();
+      if (data.version !== APP_VERSION) {
+        // Oznámiť klientovi, že je dostupná nová verzia
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'UPDATE_AVAILABLE',
+              currentVersion: APP_VERSION,
+              newVersion: data.version
+            });
+          });
+        });
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error('Nemôžem skontrolovať aktualizácie:', error);
+    return false;
+  }
+}
+
+// Periodická kontrola aktualizácií
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'CHECK_UPDATES') {
+    event.waitUntil(checkForUpdates());
+  }
 });

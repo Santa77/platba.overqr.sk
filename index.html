@@ -36,7 +36,7 @@
     <meta name="apple-mobile-web-app-title" content="Platba OverQR">
 
     <!-- PWA podpora -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=1.0.4">
     <link rel="icon" href="logo.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -71,7 +71,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js').then(function (registration) {
+                navigator.serviceWorker.register('sw.js?v=1.0.4').then(function (registration) {
                     // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     // Sledovanie úspešnej registrácie service workera
@@ -229,7 +229,7 @@
             }); var f = d.getElementsByTagName(s)[0],
                 j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
                     'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-56CKR4RC');</script>
+        })(window, document, 'script', 'dataLayer', 'GTM-56CKR4RC');</script> 
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6CLTP3Q8GS"></script>
@@ -1063,7 +1063,7 @@
         }
 
         // Kód pre detekciu aktualizácií aplikácie
-        const APP_VERSION = '1.0.2';
+        const APP_VERSION = '1.0.4';
 
         // Zobrazenie verzie v hlavičke
         document.addEventListener('DOMContentLoaded', function () {
@@ -1072,6 +1072,17 @@
                 versionDisplay.textContent = `v${APP_VERSION}`;
             }
         });
+
+        // Cache-busting reload function
+        function reloadWithCacheBusting() {
+            let url = window.location.origin + window.location.pathname;
+            // Zachová hash, ak je prítomný
+            const hash = window.location.hash;
+            // Pridaj alebo aktualizuj parameter v
+            url += '?v=' + Date.now();
+            if (hash) url += hash;
+            window.location.replace(url);
+        }
 
         // Čakanie na správy od service workera
         if ('serviceWorker' in navigator) {
@@ -1084,7 +1095,7 @@
                     // Zobraziť užívateľovi notifikáciu o dostupnej aktualizácii
                     const notification = document.getElementById('update-notification');
                     if (notification) {
-                        notification.innerHTML = `Je dostupná nová verzia (${event.data.newVersion})! <button class="bg-white text-secondary-700 px-2 py-1 rounded ml-3 font-medium" onclick="window.location.reload()">Aktualizovať teraz</button>`;
+                        notification.innerHTML = `Je dostupná nová verzia (${event.data.newVersion})! <button class=\"bg-white text-secondary-700 px-2 py-1 rounded ml-3 font-medium\" onclick=\"reloadWithCacheBusting()\">Aktualizovať teraz</button>`;
                         notification.classList.remove('hidden');
 
                         // Sledovať notifikáciu v GTM
@@ -1095,6 +1106,25 @@
                         });
                     }
                 }
+            });
+
+            // Kontrola aktualizácií po načítaní stránky a každých 30 minút
+            window.addEventListener('load', function () {
+                setTimeout(() => {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'CHECK_VERSION'
+                        });
+                    }
+                }, 1000);
+                // Intervalová kontrola každých 30 minút
+                setInterval(() => {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'CHECK_VERSION'
+                        });
+                    }
+                }, 1800000); // 30 minút
             });
 
             // Kontrola aktualizácií po načítaní stránky

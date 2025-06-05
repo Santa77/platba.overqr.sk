@@ -1,9 +1,9 @@
 {
   "name": "Platba OverQR",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "short_name": "Platba OverQR",
   "description": "Mobilné platby jednoduchšie ako kedykoľvek predtým",
-  "start_url": "index.html",
+  "start_url": "index.html?v=1.0.4",
   "display": "standalone",
   "background_color": "#4f83f7",
   "theme_color": "#4f83f7",
@@ -63,7 +63,7 @@
       "name": "Nová platba",
       "short_name": "Nová platba",
       "description": "Začať novú platbu",
-      "url": "index.html",
+      "url": "index.html?v=1.0.4",
       "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]

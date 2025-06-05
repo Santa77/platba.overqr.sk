@@ -14,10 +14,11 @@ const urlsToCache = [
 // Inštalácia Service Worker-a
 self.addEventListener('install', function(event) {
   // Vykonaj inštaláciu
+  console.log(`Inštalujem nový Service Worker verzie ${APP_VERSION}`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Cache otvorený');
+        console.log(`Cache ${CACHE_NAME} otvorený`);
         return cache.addAll(urlsToCache);
       })
   );
@@ -67,17 +68,27 @@ self.addEventListener('fetch', function(event) {
 
 // Aktivovanie nového Service Worker-a
 self.addEventListener('activate', function(event) {
-  const cacheWhitelist = [CACHE_NAME];
+  // Vymazanie starých cache
+  var cacheAllowlist = [CACHE_NAME];
+  
+  console.log(`Aktivujem nový Service Worker verzie ${APP_VERSION}`);
+  
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
+    Promise.all([
+      // Vymaž staré cache
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (cacheAllowlist.indexOf(cacheName) === -1) {
+              console.log('Vymazávam starý cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Prevzi kontrolu okamžite
+      self.clients.claim()
+    ]).then(() => {
       // Oznámiť verziu klientom
       return self.clients.matchAll().then(clients => {
         clients.forEach(client => {
@@ -119,10 +130,17 @@ async function checkForUpdates() {
   }
 }
 
-// Periodická kontrola aktualizácií
+// Sledovanie správ a handle 'SKIP_WAITING'
 self.addEventListener('message', function(event) {
+  // Periodická kontrola aktualizácií
   if (event.data && event.data.type === 'CHECK_UPDATES') {
     event.waitUntil(checkForUpdates());
+  }
+  
+  // Prinúť service workera k okamžitej aktivácii
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Service worker: Prijatý príkaz SKIP_WAITING, okamžite aktivujem nový service worker');
+    self.skipWaiting();
   }
 });
 

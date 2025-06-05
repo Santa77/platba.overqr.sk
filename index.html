@@ -122,10 +122,51 @@
     <!-- Registrácia Service Worker-a pre offline funkcionalitu -->
     <script>
         if ('serviceWorker' in navigator) {
+            // Sledovanie správ zo service workera
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                // Ak service worker detekoval novú verziu
+                if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                    console.log('Nová verzia je dostupná:', event.data.newVersion);
+                    
+                    // Prinútiť aktualizáciu service workera
+                    if (navigator.serviceWorker.controller) {
+                        // Upozorniť service worker, aby sa aktualizoval
+                        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+                        
+                        // Sledovať udalosť aktualizácie service workera
+                        dataLayer.push({
+                            'event': 'service_worker_update_initiated',
+                            'from_version': event.data.currentVersion,
+                            'to_version': event.data.newVersion
+                        });
+                        
+                        // Prinajhoršom občerstvi stránku po 1 sekunde
+                        setTimeout(function() {
+                            reloadWithCacheBusting();
+                        }, 1000);
+                    }
+                }
+            });
+            
             window.addEventListener('load', function () {
+                // Nová registrácia s cache-busting parametrom
                 navigator.serviceWorker.register('sw.js?v=1.0.6').then(function (registration) {
                     // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    
+                    // Kontrola dostupnosti aktualizácie
+                    registration.update().then(() => console.log('Service worker aktualizácia skontrolovaná'));
+                    
+                    // Sledovanie aktualizácie service workera
+                    let refreshing = false;
+                    navigator.serviceWorker.addEventListener('controllerchange', function() {
+                        if (refreshing) return;
+                        refreshing = true;
+                        console.log('Service worker vymenený - občerstvujem stránku');
+                        dataLayer.push({ 'event': 'service_worker_controller_changed' });
+                        reloadWithCacheBusting();
+                    });
+                    
                     // Sledovanie úspešnej registrácie service workera
                     dataLayer.push({
                         'event': 'service_worker_registered',

@@ -1,0 +1,23 @@
+# robots.txt pre platba.leqr.sk
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /manifest.json
+
+# Ochrana súborov, ktoré nie sú určené pre indexáciu
+Disallow: /icons/
+Disallow: /version.json
+Disallow: /sw.js
+Disallow: /gtm_import.json
+
+# Ochrana priečinka s dokumentáciou
+Disallow: /docs/
+
+# Nastavenie predpokladanej rýchlosti crawlovania
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://platba.leqr.sk/sitemap.xml
+
+# Podmienky použitia SEO
+Host: platba.leqr.sk

@@ -90,20 +90,120 @@ Vygenerovaný QR kód môžete naskenovať mobilnou aplikáciou vašej banky a o
 2. Kliknite na ikonu inštalácie (⊕) v pravej časti adresného riadku
 3. Potvrďte inštaláciu kliknutím na "Inštalovať"
 
-## 🔧 Lokálny vývoj
+## 🔧 Vývojový proces
 
 ### Požiadavky
 - Ľubovoľný webový server (napr. Apache, Nginx, alebo VS Code Live Server)
 - Pre generovanie ikon: [ImageMagick](https://imagemagick.org/)
+- PowerShell (pre aktualizáciu verzií)
+- Git
 
-### Inštalácia pre vývojárov
+### Nastavenie vývojového prostredia
 ```bash
 # Klonovanie repozitára
 git clone https://github.com/Santa77/platba.overqr.sk.git
 cd platba.overqr.sk
 
-# Lokálne spustenie (príklad s python)
+# Presun do frontend adresára
+cd fg
+```
+
+### Lokálne testovanie
+Aplikáciu môžete lokálne testovať pomocou jednoduchého HTTP servera:
+
+#### Pomocou Python
+```bash
 python -m http.server 8080
+```
+
+#### Pomocou Node.js (ak máte nainštalovaný)
+```bash
+npx serve -s .
+```
+
+#### Pomocou PHP
+```bash
+php -S localhost:8080
+```
+
+#### Pomocou VS Code
+Nainštalujte rozšírenie "Live Server" a kliknite na "Go Live" v stavovom riadku.
+
+### Build proces
+Keďže ide o statickú webovú aplikáciu, nevyžaduje sa žiadny komplexný build proces. Všetky súbory sú už pripravené na nasadenie. Aplikácia využíva:
+- Vanilla JavaScript
+- HTML5 a CSS3
+- Tailwind CSS (priamo vložený cez CDN)
+- Service Worker pre offline funkcionalitu
+
+### Aktualizácia verzie
+Pre aktualizáciu verzie aplikácie vo všetkých súboroch použite pripravený PowerShell skript:
+
+```powershell
+# Aktualizácia na novú verziu
+.\update-version.ps1 -NewVersion "1.0.7"
+```
+
+Skript aktualizuje verziu v nasledujúcich súboroch:
+- version.json (hlavný zdroj pravdy pre verziu)
+- sw.js (konštanta APP_VERSION)
+- manifest.json (verzia, query parametre v URL)
+- index.html (query parametre pre manifest a service worker, JavaScript konštanta)
+
+### Deploy proces
+
+#### Nasadenie na hosting
+1. Pripravte produkčnú verziu:
+   - Aktualizujte verziu pomocou skriptu `update-version.ps1`
+   - Skontrolujte všetky súbory a uistite sa, že používajú správne cesty a nastavenia
+
+2. Deploynite na hosting:
+   - Nahrajte všetky súbory na váš webový server prostredníctvom FTP, SFTP, alebo SSH
+   - Alternatívne použite git push, ak váš hosting podporuje automatický deploy z git repozitára
+
+```bash
+# Príklad nasadenia pomocou rsync (pre Linux/Mac/WSL)
+rsync -av --exclude='.git' --exclude='version_backup_*' ./ user@your-server:/path/to/webroot/
+```
+
+#### Nasadenie na GitHub Pages
+1. V repozitári prejdite na Settings > Pages
+2. Nastavte Source na vašu hlavnú branch
+3. Kliknite na Save
+
+#### Nasadenie na Netlify/Vercel
+1. Prepojte svoj GitHub repozitár s Netlify alebo Vercel
+2. Nastavte build command na prázdny (keďže ide o statický obsah)
+3. Nastavte publish directory na `./`
+
+### CI/CD Pipeline
+Pre automatizáciu deploy procesu môžete vytvoriť GitHub Actions workflow:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to production
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/
 ```
 
 ## 📑 Ako používať

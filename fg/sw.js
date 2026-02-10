@@ -1,5 +1,5 @@
-const APP_VERSION = '1.0.6';
-const CACHE_NAME = `overqr-v${APP_VERSION}`;
+const APP_VERSION = '1.1.2';
+const CACHE_NAME = `leqr-v${APP_VERSION}`;
 const urlsToCache = [
   '/',
   '/index.html',
@@ -143,5 +143,7 @@ self.addEventListener('message', function(event) {
     self.skipWaiting();
   }
 });
+
+
 
 

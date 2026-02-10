@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- Primary Meta Tags -->
-    <title>Platba OverQR – Rýchle a jednoduché platby QR kódom</title>
-    <meta name="title" content="Platba OverQR – Rýchle a jednoduché platby QR kódom">
+    <title>Platba LeQR.SK – Rýchle a jednoduché platby QR kódom</title>
+    <meta name="title" content="Platba LeQR.SK – Rýchle a jednoduché platby QR kódom">
     <meta name="description"
         content="Vytvárajte QR kódy pre platby jednoducho, bez inštalácie. Moderná PWA pre platby vo formáte PayBySquare.">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://platba.leqr.sk/">
-    <meta property="og:title" content="Platba OverQR – Rýchle platby cez QR kód">
+    <meta property="og:title" content="Platba LeQR.SK – Rýchle platby cez QR kód">
     <meta property="og:description"
         content="Zadajte sumu, poznámku a získajte QR kód pre rýchlu platbu. Bez registrácie, bez stresu.">
     <meta property="og:image" content="https://platba.leqr.sk/images/og-image.png">
@@ -23,7 +23,7 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://platba.leqr.sk/">
-    <meta name="twitter:title" content="Platba OverQR – Rýchle platby cez QR kód">
+    <meta name="twitter:title" content="Platba LeQR.SK – Rýchle platby cez QR kód">
     <meta name="twitter:description"
         content="Vytvorte si bankový QR kód okamžite – pohodlne a bezpečne. Funguje aj offline.">
     <meta name="twitter:image" content="https://platba.leqr.sk/images/og-image.png">
@@ -33,10 +33,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Platba OverQR">
+    <meta name="apple-mobile-web-app-title" content="Platba LeQR.SK">
 
     <!-- PWA podpora -->
-    <link rel="manifest" href="manifest.json?v=1.0.6">
+    <link rel="manifest" href="manifest.json?v=1.1.2">
     
     <!-- QR kód s logom - štýly -->
     <style>
@@ -150,7 +150,7 @@
             
             window.addEventListener('load', function () {
                 // Nová registrácia s cache-busting parametrom
-                navigator.serviceWorker.register('sw.js?v=1.0.6').then(function (registration) {
+                navigator.serviceWorker.register('sw.js?v=1.1.2').then(function (registration) {
                     // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     
@@ -369,7 +369,7 @@
         <!-- Hlavička -->
         <header class="mb-6 text-center">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-                <i class="fas fa-qrcode mr-2"></i> Platba OverQR
+                <i class="fas fa-qrcode mr-2"></i> Platba LeQR.SK
             </h1>
             <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho <span
                     id="app-version-display" class="text-sm opacity-70"></span></p>
@@ -394,7 +394,7 @@
 
                 <!-- Formulár platby -->
                 <div id="payment-form" class="p-5">
-                    <h2 class="text-xl font-bold text-primary-700 mb-4 pb-2 border-b border-gray-200">Vytvorenie platby
+                    <h2 class="text-xl font-bold text-primary-700 mb-4 pb-2 border-b border-gray-200">Vytvorenie platobného QR
                     </h2>
 
                     <!-- Suma -->
@@ -410,11 +410,20 @@
                                 onkeypress="return isNumberKey(event)" onpaste="return validatePaste(event)">
                         </div>
                         <div id="amount-error" class="mt-1 text-sm text-red-600"></div>
+
+                        <label class="mt-3 flex items-start gap-3 select-none cursor-pointer">
+                            <input id="no-amount" type="checkbox"
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">Bez sumy</span>
+                                <span class="block text-xs text-gray-500">Suma nebude súčasťou QR kódu</span>
+                            </span>
+                        </label>
                     </div>
 
                     <!-- Poznámka -->
                     <div class="mb-4">
-                        <label for="note" class="block text-sm font-medium text-gray-700 mb-2">Poznámka k platbe</label>
+                        <label for="note" class="block text-sm font-medium text-gray-700 mb-2">Poznámka k platbe <span id="note-required" class="hidden text-red-600">*</span></label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-comment-alt text-gray-400"></i>
@@ -422,6 +431,7 @@
                             <input type="text" id="note" maxlength="35" placeholder="Popis platby (max 35 znakov)"
                                 class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
+                        <div id="note-error" class="mt-1 text-sm text-red-600"></div>
                     </div>
 
                     <!-- Variabilný symbol -->
@@ -435,6 +445,15 @@
                             <input type="text" id="vs-display" readonly placeholder="Automaticky generovaný"
                                 class="block w-full pl-10 pr-4 py-3 border border-gray-300 bg-gray-50 rounded-lg cursor-not-allowed transition duration-200">
                         </div>
+
+                        <label class="mt-3 flex items-start gap-3 select-none cursor-pointer">
+                            <input id="no-vs" type="checkbox"
+                                class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <span class="text-sm text-gray-700">
+                                <span class="font-medium">Bez VS</span>
+                                <span class="block text-xs text-gray-500">Variabilný symbol nebude súčasťou QR kódu</span>
+                            </span>
+                        </label>
                     </div>
 
                     <!-- Tlačidlo generovať QR -->
@@ -473,17 +492,18 @@
                         </div>
                     </div>
 
-                    <!-- Názov obchodníka -->
+                    <!-- Meno majiteľa účtu -->
                     <div class="mb-6">
-                        <label for="recipient" class="block text-sm font-medium text-gray-700 mb-2">Názov
-                            obchodníka</label>
+                        <label for="recipient" class="block text-sm font-medium text-gray-700 mb-2">Meno/Názov majiteľa
+                            účtu</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-building text-gray-400"></i>
                             </div>
-                            <input type="text" id="recipient" placeholder="Váš obchodný názov"
+                            <input type="text" id="recipient" placeholder="Meno alebo názov majiteľa účtu"
                                 class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
+                        <div id="recipient-error" class="mt-1 text-sm text-red-600"></div>
                     </div>
 
                     <!-- Tlačidlo uložiť -->
@@ -515,6 +535,16 @@
                         <p class="mt-3 text-gray-500">Generujem QR kód...</p>
                     </div>
                     <div id="qr-code" class="bg-white p-5 rounded-xl shadow-md my-4 hidden flex justify-center relative qr-with-logo"></div>
+                    <div id="qr-actions" class="hidden mt-3 flex flex-col sm:flex-row gap-3">
+                        <button id="copy-qr-btn" onclick="copyQrToClipboard()"
+                            class="flex-1 py-3 bg-white hover:bg-gray-50 rounded-lg text-gray-800 font-medium border border-gray-200 flex items-center justify-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <i class="fas fa-copy mr-2"></i> Kopírovať QR
+                        </button>
+                        <button id="save-qr-btn" onclick="saveQrImage()"
+                            class="flex-1 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 rounded-lg text-white font-medium flex items-center justify-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <i class="fas fa-download mr-2"></i> Uložiť / Zdieľať
+                        </button>
+                    </div>
                     <div id="qr-info"
                         class="w-full bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500 text-sm hidden">
                         <div class="grid grid-cols-1 gap-2">
@@ -527,6 +557,19 @@
                 </div>
             </div>
         </div>
+
+        <footer class="mt-6 text-center text-white text-opacity-80 text-xs">
+            <div class="inline-block px-4 py-2 rounded-lg bg-white bg-opacity-10">
+                <span>Autor: Slavoj SANTA Hruška</span>
+                <span class="mx-2">|</span>
+                <span>Copyright © 2025</span>
+                <span class="mx-2">|</span>
+                <span>
+                    Kontakt:
+                    <a id="contact-email" href="#" class="underline hover:text-white">email</a>
+                </span>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -534,8 +577,12 @@
         let settings = {
             iban: '',
             swift: '',
-            recipient: ''
+            recipient: '',
+            noAmount: false,
+            noVS: false
         };
+
+        let lastPayBySquareString = null;
 
         let dailyCounters = {};
 
@@ -543,7 +590,23 @@
         window.onload = function () {
             loadSettings();
             updateVSDisplay();
+            attachPaymentOptionHandlers();
+            syncPaymentFormState();
         };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const el = document.getElementById('contact-email');
+            if (!el) return;
+
+            const user = ['in', 'fo'].join('');
+            const domain = ['san', 'ta', '3d'].join('');
+            const tld = ['s', 'k'].join('');
+            const email = `${user}@${domain}.${tld}`;
+
+            const subject = encodeURIComponent('Kontakt ohľadne projektu Platba LeQR.SK');
+            el.textContent = email;
+            el.href = `mailto:${email}?subject=${subject}`;
+        });
 
         function switchTab(tab) {
             // Skryjeme všetky formuláre
@@ -587,6 +650,8 @@
 
                 if (savedSettings) {
                     settings = JSON.parse(savedSettings);
+                    settings.noAmount = !!settings.noAmount;
+                    settings.noVS = !!settings.noVS;
                     console.log('Nastavenia načítané z localStorage:', settings);
 
                     // Vyplníme formulár načítanými hodnotami
@@ -595,12 +660,18 @@
                     if (settings.recipient) document.getElementById('recipient').value = settings.recipient;
                 }
 
+                const noAmountEl = document.getElementById('no-amount');
+                const noVsEl = document.getElementById('no-vs');
+                if (noAmountEl) noAmountEl.checked = !!settings.noAmount;
+                if (noVsEl) noVsEl.checked = !!settings.noVS;
+
                 if (savedCounters) {
                     dailyCounters = JSON.parse(savedCounters);
                     console.log('Počítadlá načítané z localStorage:', dailyCounters);
                 }
 
                 updateVSDisplay();
+                syncPaymentFormState();
             } catch (error) {
                 console.error('Chyba pri načítavaní dát z localStorage:', error);
             }
@@ -613,6 +684,7 @@
             const inputIban = document.getElementById('iban').value.trim();
             const swift = document.getElementById('swift').value.trim();
             const recipient = document.getElementById('recipient').value.trim();
+            const recipientErrorEl = document.getElementById('recipient-error');
 
             // Track form interaction
             dataLayer.push({
@@ -636,7 +708,23 @@
 
             document.getElementById('iban-error').textContent = '';
 
-            settings = { iban: validatedIban, swift, recipient };
+            if (!recipient) {
+                if (recipientErrorEl) recipientErrorEl.textContent = 'Zadajte meno/názov majiteľa účtu';
+
+                dataLayer.push({
+                    'event': 'recipient_validation_error'
+                });
+                return;
+            }
+            if (recipientErrorEl) recipientErrorEl.textContent = '';
+
+            settings = {
+                iban: validatedIban,
+                swift,
+                recipient,
+                noAmount: !!settings.noAmount,
+                noVS: !!settings.noVS
+            };
 
             // Uložíme nastavenia do localStorage
             try {
@@ -671,6 +759,62 @@
                 document.getElementById('settings-success').classList.add('hidden');
                 document.getElementById('settings-success').textContent = '';
             }, 1000);
+        }
+
+        function persistSettings() {
+            try {
+                localStorage.setItem('paybySquareSettings', JSON.stringify(settings));
+            } catch (error) {
+                console.error('Chyba pri ukladaní nastavení do localStorage:', error);
+            }
+        }
+
+        function attachPaymentOptionHandlers() {
+            const noAmountEl = document.getElementById('no-amount');
+            const noVsEl = document.getElementById('no-vs');
+            if (noAmountEl) {
+                noAmountEl.addEventListener('change', () => {
+                    settings.noAmount = !!noAmountEl.checked;
+                    persistSettings();
+                    syncPaymentFormState();
+                });
+            }
+            if (noVsEl) {
+                noVsEl.addEventListener('change', () => {
+                    settings.noVS = !!noVsEl.checked;
+                    persistSettings();
+                    syncPaymentFormState();
+                    updateVSDisplay();
+                });
+            }
+        }
+
+        function syncPaymentFormState() {
+            const amountEl = document.getElementById('amount');
+            const noteRequiredEl = document.getElementById('note-required');
+            const noteErrorEl = document.getElementById('note-error');
+            const amountErrorEl = document.getElementById('amount-error');
+            const vsEl = document.getElementById('vs-display');
+
+            const noteRequired = !!settings.noAmount || !!settings.noVS;
+            if (noteRequiredEl) noteRequiredEl.classList.toggle('hidden', !noteRequired);
+            if (!noteRequired && noteErrorEl) noteErrorEl.textContent = '';
+
+            if (amountEl) {
+                amountEl.disabled = !!settings.noAmount;
+                amountEl.classList.toggle('bg-gray-50', !!settings.noAmount);
+                amountEl.classList.toggle('cursor-not-allowed', !!settings.noAmount);
+                if (settings.noAmount) {
+                    amountEl.value = '';
+                    if (amountErrorEl) amountErrorEl.textContent = '';
+                }
+            }
+
+            if (vsEl) {
+                if (settings.noVS) {
+                    vsEl.value = '';
+                }
+            }
         }
 
         function validateIBAN(iban) {
@@ -793,6 +937,10 @@
         }
 
         function updateVSDisplay() {
+            if (settings.noVS) {
+                document.getElementById('vs-display').value = '';
+                return;
+            }
             const today = new Date();
             const dateKey = today.toISOString().slice(2, 10).replace(/-/g, '');
             const nextCounter = (dailyCounters[dateKey] || 0) + 1;
@@ -806,6 +954,104 @@
             // Vkladá medzery po každých 4 znakoch
             if (!iban) return '';
             return iban.replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        function renderQrToCanvas(data, sizePx = 1024) {
+            const typeNumber = 10;
+            const errorCorrectionLevel = 'L';
+
+            const qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(data);
+            qr.make();
+
+            const moduleCount = qr.getModuleCount();
+            const canvas = document.createElement('canvas');
+            canvas.width = sizePx;
+            canvas.height = sizePx;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cellSize = sizePx / moduleCount;
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        const w = Math.ceil((col + 1) * cellSize) - Math.floor(col * cellSize);
+                        const h = Math.ceil((row + 1) * cellSize) - Math.floor(row * cellSize);
+                        ctx.fillRect(Math.round(col * cellSize), Math.round(row * cellSize), w, h);
+                    }
+                }
+            }
+
+            return canvas;
+        }
+
+        function getQrFilename() {
+            const ts = new Date().toISOString().replace(/[:.]/g, '-');
+            return `leqr-qr-${ts}.png`;
+        }
+
+        function getQrPngBlob() {
+            if (!lastPayBySquareString) {
+                throw new Error('QR kód nie je pripravený.');
+            }
+            const canvas = renderQrToCanvas(lastPayBySquareString, 1024);
+            return new Promise((resolve, reject) => {
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error('Nepodarilo sa pripraviť obrázok QR kódu.'));
+                        return;
+                    }
+                    resolve(blob);
+                }, 'image/png');
+            });
+        }
+
+        async function copyQrToClipboard() {
+            try {
+                const blob = await getQrPngBlob();
+                if (!navigator.clipboard || !window.ClipboardItem) {
+                    throw new Error('Kopírovanie do schránky nie je podporované v tomto prehliadači.');
+                }
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+                showErrorModal('Skopírované', 'QR kód bol skopírovaný do schránky ako obrázok.');
+            } catch (e) {
+                console.error('Copy QR failed:', e);
+                alert(e.message || 'Kopírovanie QR kódu zlyhalo.');
+            }
+        }
+
+        async function saveQrImage() {
+            try {
+                const blob = await getQrPngBlob();
+                const file = new File([blob], getQrFilename(), { type: 'image/png' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Platobný QR kód'
+                    });
+                    return;
+                }
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error('Save QR failed:', e);
+                alert(e.message || 'Uloženie QR kódu zlyhalo.');
+            }
         }
 
         function generatePayBySquareString(amount, vs, note, iban, swift, recipient) {
@@ -823,7 +1069,7 @@
                     payments: [
                         {
                             type: PaymentOptions.PaymentOrder, // PaymentOrder = 1
-                            amount: parseFloat(amount),
+                            ...(amount !== null && amount !== undefined && amount !== '' && { amount: parseFloat(amount) }),
                             currencyCode: CurrencyCode.EUR,
                             // Pridáme variabilný symbol, ak je zadaný
                             ...(vs && vs.trim() !== '' && { variableSymbol: vs.toString() }),
@@ -837,8 +1083,9 @@
                                     ...(swift && swift.trim() !== '' && { bic: swift })
                                 }
                             ],
-                            // Pridáme meno príjemcu, ak je zadané
-                            ...(recipient && recipient.trim() !== '' && { beneficiaryName: recipient })
+                            beneficiary: {
+                                name: (recipient || '').toString().trim()
+                            }
                         }
                     ]
                 };
@@ -897,37 +1144,53 @@
 
         function generateQR() {
             // Get form values
-            const amount = document.getElementById('amount').value;
-            const vs = generateVS();
-            let note = document.getElementById('note').value;
-            // Pridáť prefix 'PQR:' ak tam ešte nie je
-            if (!note.trim().startsWith('PQR:')) {
-                note = 'PQR:' + note.trim();
+            const noAmount = !!settings.noAmount;
+            const noVS = !!settings.noVS;
+
+            if (!settings.iban || !settings.recipient || settings.recipient.trim() === '') {
+                showErrorModal('Chýbajú bankové údaje', 'Prosím, doplňte IBAN a meno/názov majiteľa účtu v Nastaveniach.');
+                switchTab('settings');
+                return;
             }
+
+            const amount = noAmount ? '' : document.getElementById('amount').value;
+            const vs = noVS ? '' : generateVS();
+            const noteInput = document.getElementById('note').value;
+            const noteErrorEl = document.getElementById('note-error');
+            const noteRequired = noAmount || noVS;
+            if (noteRequired && noteInput.trim() === '') {
+                if (noteErrorEl) noteErrorEl.textContent = 'Poznámka je povinná.';
+                showErrorModal('Chýba poznámka', 'Pri voľbe „Bez sumy“ alebo „Bez VS“ je poznámka povinná.');
+                return;
+            }
+            if (noteErrorEl) noteErrorEl.textContent = '';
+            let note = noteInput.trim();
             
             // Validovat sumu - musí byť väčšia ako 0 a menšia ako 400 EUR
-            const amountValue = parseFloat(amount);
-            if (isNaN(amountValue) || amountValue <= 0) {
-                showErrorModal('Neplatná suma', 'Suma platby musí byť väčšia ako 0 EUR.');
+            if (!noAmount) {
+                const amountValue = parseFloat(amount);
+                if (isNaN(amountValue) || amountValue <= 0) {
+                    showErrorModal('Neplatná suma', 'Suma platby musí byť väčšia ako 0 EUR.');
+                    
+                    // Track validation error
+                    dataLayer.push({
+                        'event': 'amount_validation_error',
+                        'error_type': 'zero_or_negative'
+                    });
+                    return;
+                }
                 
-                // Track validation error
-                dataLayer.push({
-                    'event': 'amount_validation_error',
-                    'error_type': 'zero_or_negative'
-                });
-                return;
-            }
-            
-            if (amountValue >= 400) {
-                showErrorModal('Prekročený limit sumy', 'Suma platby nesmie prekročiť 400 EUR kvôli možnému problému s odpočtom DPH pri e-kasa bločkoch.');
-                
-                // Track validation error
-                dataLayer.push({
-                    'event': 'amount_validation_error',
-                    'error_type': 'over_limit',
-                    'amount': amountValue
-                });
-                return;
+                if (amountValue >= 400) {
+                    showErrorModal('Prekročený limit sumy', 'Suma platby nesmie prekročiť 400 EUR kvôli možnému problému s odpočtom DPH pri e-kasa bločkoch.');
+                    
+                    // Track validation error
+                    dataLayer.push({
+                        'event': 'amount_validation_error',
+                        'error_type': 'over_limit',
+                        'amount': amountValue
+                    });
+                    return;
+                }
             }
 
             // Track payment form interaction
@@ -997,18 +1260,20 @@
                 // Track amount input
                 dataLayer.push({
                     'event': 'payment_amount_entered',
-                    'amount': parseFloat(amount)
+                    'amount': noAmount ? null : parseFloat(amount)
                 });
 
                 // Generate PayBySquare string
                 const payBySquareString = generatePayBySquareString(
-                    amount,
-                    vs,
+                    noAmount ? null : amount,
+                    noVS ? '' : vs,
                     note,
                     settings.iban,
                     settings.swift,
                     settings.recipient
                 );
+
+                lastPayBySquareString = payBySquareString;
 
                 console.log('PayBySquare string:', payBySquareString);
 
@@ -1084,11 +1349,12 @@
                     // Zobrazíme QR kód a informácie
                     document.getElementById('qr-placeholder').classList.add('hidden');
                     document.getElementById('qr-code').classList.remove('hidden');
+                    document.getElementById('qr-actions').classList.remove('hidden');
                     document.getElementById('qr-info').classList.remove('hidden');
 
                     // Zobraziť platebné informácie
-                    document.getElementById('qr-amount').textContent = `${parseFloat(amount).toFixed(2)} €`;
-                    document.getElementById('qr-vs').textContent = vs;
+                    document.getElementById('qr-amount').textContent = noAmount ? 'Bez sumy' : `${parseFloat(amount).toFixed(2)} €`;
+                    document.getElementById('qr-vs').textContent = noVS ? 'Bez VS' : vs;
                     document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                     document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
 
@@ -1100,11 +1366,13 @@
                         'event': 'qr_code_generated',
                         'generation_time_ms': Math.round(qrGenerationTime),
                         'qr_method': 'qrcode-generator',
-                        'payment_amount': parseFloat(amount),
+                        'payment_amount': noAmount ? null : parseFloat(amount),
                         'has_note': note.trim() !== ''
                     });
 
-                    commitVS();
+                    if (!noVS) {
+                        commitVS();
+                    }
 
                     // Aktualizujeme zobrazenie VS pre ďalšie použitie
                     updateVSDisplay();
@@ -1136,11 +1404,12 @@
                         // Zobrazíme QR kód a informácie
                         document.getElementById('qr-placeholder').classList.add('hidden');
                         document.getElementById('qr-code').classList.remove('hidden');
+                        document.getElementById('qr-actions').classList.remove('hidden');
                         document.getElementById('qr-info').classList.remove('hidden');
 
                         // Zobraziť platebné informácie
-                        document.getElementById('qr-amount').textContent = `${parseFloat(amount).toFixed(2)} €`;
-                        document.getElementById('qr-vs').textContent = vs;
+                        document.getElementById('qr-amount').textContent = noAmount ? 'Bez sumy' : `${parseFloat(amount).toFixed(2)} €`;
+                        document.getElementById('qr-vs').textContent = noVS ? 'Bez VS' : vs;
                         document.getElementById('qr-note').textContent = note || 'Bez poznámky';
                         document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
 
@@ -1153,11 +1422,13 @@
                             'generation_time_ms': Math.round(qrGenerationTime),
                             'qr_method': 'google_chart_api',
                             'fallback_qr_method_used': true,
-                            'payment_amount': parseFloat(amount),
+                            'payment_amount': noAmount ? null : parseFloat(amount),
                             'has_note': note.trim() !== ''
                         });
 
-                        commitVS();
+                        if (!noVS) {
+                            commitVS();
+                        }
 
                         // Aktualizujeme zobrazenie VS pre ďalšie použitie
                         updateVSDisplay();
@@ -1235,7 +1506,7 @@
         }
 
         // Kód pre detekciu aktualizácií aplikácie
-        const APP_VERSION = '1.0.6';
+        const APP_VERSION = '1.1.2';
 
         // Zobrazenie verzie v hlavičke
         document.addEventListener('DOMContentLoaded', function () {
@@ -1323,4 +1594,6 @@
 </body>
 
 </html>
+
+
 

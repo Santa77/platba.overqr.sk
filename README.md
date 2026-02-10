@@ -1,8 +1,8 @@
-# ![Platba OverQR](fg/icons/icon-96x96.png) Platba OverQR
+# ![Platba LeQR.SK](fg/icons/icon-96x96.png) Platba LeQR.SK
 
 <div align="center">
   
-  ![Verzia](https://img.shields.io/badge/verzia-1.0.6-blue.svg)
+  ![Verzia](https://img.shields.io/badge/verzia-1.1.0-blue.svg)
   ![PWA Ready](https://img.shields.io/badge/PWA-Ready-brightgreen.svg)
   ![Kompatibilita](https://img.shields.io/badge/kompatibilita-iOS%20%7C%20Android%20%7C%20Desktop-lightgrey.svg)
   
@@ -13,13 +13,13 @@
   <p>Vytvorte QR kód pre bankové platby na Slovensku jednoducho a rýchlo, bez nutnosti inštalácie aplikácie</p>
   
   <p align="center">
-    <img src="fg/images/Image1.png" alt="Platba OverQR - Formulár platby" width="250" style="margin-right: 15px" />
-    <img src="fg/images/Image2.png" alt="Platba OverQR - Nastavenia" width="250" style="margin-right: 15px" />
-    <img src="fg/images/Image3.png" alt="Platba OverQR - QR kód" width="250" />
+    <img src="fg/images/Image1.png" alt="Platba LeQR.SK - Formulár platby" width="250" style="margin-right: 15px" />
+    <img src="fg/images/Image2.png" alt="Platba LeQR.SK - Nastavenia" width="250" style="margin-right: 15px" />
+    <img src="fg/images/Image3.png" alt="Platba LeQR.SK - QR kód" width="250" />
   </p>
 </div>
 
-**Platba OverQR** je moderná platforma pre generovanie platobných QR kódov vo formáte PayBySquare pre bankové platby na Slovensku. Tento projekt je rozdelený na dve hlavné časti:
+**Platba LeQR.SK** je moderná platforma pre generovanie platobných QR kódov vo formáte PayBySquare pre bankové platby na Slovensku. Tento projekt je rozdelený na dve hlavné časti:
 
 ## Štruktúra projektu
 

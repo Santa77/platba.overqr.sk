@@ -1,8 +1,8 @@
-# ![Platba OverQR](icons/icon-96x96.png) Platba OverQR
+# ![Platba LeQR.SK](icons/icon-96x96.png) Platba LeQR.SK
 
 <div align="center">
   
-  ![Verzia](https://img.shields.io/badge/verzia-1.0.6-blue.svg)
+  ![Verzia](https://img.shields.io/badge/verzia-1.1.0-blue.svg)
   ![PWA Ready](https://img.shields.io/badge/PWA-Ready-brightgreen.svg)
   ![Kompatibilita](https://img.shields.io/badge/kompatibilita-iOS%20%7C%20Android%20%7C%20Desktop-lightgrey.svg)
   
@@ -15,12 +15,12 @@
   [Funkcie](#funkcie) • [Inštalácia](#inštalácia) • [Ako používať](#ako-používať) • [Technológie](#technológie)
 
   <p align="center">
-    <img src="images/Image1.png" alt="Platba OverQR - Formulár platby" width="250" style="margin-right: 15px" />
-    <img src="images/Image2.png" alt="Platba OverQR - Nastavenia" width="250" style="margin-right: 15px" />
-    <img src="images/Image3.png" alt="Platba OverQR - QR kód" width="250" />
+    <img src="images/Image1.png" alt="Platba LeQR.SK - Formulár platby" width="250" style="margin-right: 15px" />
+    <img src="images/Image2.png" alt="Platba LeQR.SK - Nastavenia" width="250" style="margin-right: 15px" />
+    <img src="images/Image3.png" alt="Platba LeQR.SK - QR kód" width="250" />
   </p>
   
-  <p align="center"><em>Platba OverQR na iOS: formulár pre rýchle zadanie platby, intuitívne nastavenia účtu a čistý QR kód pre okamžité skenovanie</em></p>
+  <p align="center"><em>Platba LeQR.SK na iOS: formulár pre rýchle zadanie platby, intuitívne nastavenia účtu a čistý QR kód pre okamžité skenovanie</em></p>
   
   <p align="center">
     <strong>Zameriava sa na jednoduchosť, rýchlosť a elegantný dizajn - od sumy k platobnému QR kódu za pár sekúnd</strong>
@@ -30,7 +30,7 @@
 
 ## 📝 O projekte
 
-**Platba OverQR** je moderná PWA aplikácia pre jednoduché a rýchle generovanie QR kódov pre bankový prevod vo formáte PayBySquare či Bysquare. Ako môžete vidieť na obrázkoch vyššie, aplikácia poskytuje jednoduché, ľahko ovládateľné rozhranie s tromi hlavnými obrazovkami:
+**Platba LeQR.SK** je moderná PWA aplikácia pre jednoduché a rýchle generovanie QR kódov pre bankový prevod vo formáte PayBySquare či Bysquare. Ako môžete vidieť na obrázkoch vyššie, aplikácia poskytuje jednoduché, ľahko ovládateľné rozhranie s tromi hlavnými obrazovkami:
 
 1. **Formulár platby** - rýchle zadanie sumy, poznámky a variabilného symbolu
 2. **Nastavenia účtu** - jednoduché zadanie IBAN, BIC kódu a údajov príjemcu
@@ -38,7 +38,7 @@
 
 Vygenerovaný QR kód môžete naskenovať mobilnou aplikáciou vašej banky a okamžite vykonať platbu bez nutnosti manuálneho zadávania údajov. Aplikácia je optimalizovaná pre mobilné zariadenia s dôrazom na jednoduchú používateľskosť aj na menších obrazovkách.
 
-### 🌟 Prečo Platba OverQR?
+### 🌟 Prečo Platba LeQR.SK?
 
 - **Moderný mobilný dizajn** - čisté, elegantné rozhranie optimalizované pre používanie na iPhone a Android zariadení
 - **Rýchlosť platby** - od zadávania sumy po QR kód v niekoľkých sekundách
@@ -101,8 +101,8 @@ Vygenerovaný QR kód môžete naskenovať mobilnou aplikáciou vašej banky a o
 ### Nastavenie vývojového prostredia
 ```bash
 # Klonovanie repozitára
-git clone https://github.com/Santa77/platba.overqr.sk.git
-cd platba.overqr.sk
+git clone https://github.com/Santa77/platba.leqr.sk.git
+cd platba.leqr.sk
 
 # Presun do frontend adresára
 cd fg

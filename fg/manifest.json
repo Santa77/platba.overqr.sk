@@ -1,9 +1,9 @@
 {
   "name": "Platba LeQR.SK",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "short_name": "Platba LeQR.SK",
   "description": "Mobilné platby jednoduchšie ako kedykoľvek predtým",
-  "start_url": "index.html?v=1.1.2",
+  "start_url": "index.html?v=1.1.3",
   "display": "standalone",
   "background_color": "#4f83f7",
   "theme_color": "#4f83f7",
@@ -63,11 +63,12 @@
       "name": "Nová platba",
       "short_name": "Nová platba",
       "description": "Začať novú platbu",
-      "url": "index.html?v=1.1.2",
+      "url": "index.html?v=1.1.3",
       "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }
+
 
 
 

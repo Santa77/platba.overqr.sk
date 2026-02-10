@@ -1,6 +1,6 @@
 # Dokumentácia Google Tag Manager eventov
 
-Tento dokument obsahuje zoznam všetkých eventov, ktoré sú implementované v aplikácii Platba OverQR pre sledovanie pomocou Google Tag Manager.
+Tento dokument obsahuje zoznam všetkých eventov, ktoré sú implementované v aplikácii Platba LeQR.SK pre sledovanie pomocou Google Tag Manager.
 
 ## Základné eventy aplikácie
 

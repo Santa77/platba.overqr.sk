@@ -10,7 +10,7 @@ if ($NewVersion -notmatch '^\d+\.\d+\.\d+$') {
 }
 
 # Zobraziť začiatočnú správu
-Write-Host "===== Aktualizácia verzie aplikácie OverQR =====" -ForegroundColor Cyan
+Write-Host "===== Aktualizácia verzie aplikácie LeQR.SK =====" -ForegroundColor Cyan
 Write-Host "Nová verzia: $NewVersion" -ForegroundColor Yellow
 Write-Host ""
 

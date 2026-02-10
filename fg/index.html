@@ -769,6 +769,14 @@
             const today = new Date();
             const dateKey = today.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD
 
+            const nextCounter = (dailyCounters[dateKey] || 0) + 1;
+            return dateKey + String(nextCounter).padStart(6, '0');
+        }
+
+        function commitVS() {
+            const today = new Date();
+            const dateKey = today.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD
+
             if (!dailyCounters[dateKey]) {
                 dailyCounters[dateKey] = 0;
             }
@@ -782,8 +790,6 @@
             } catch (error) {
                 console.error('Chyba pri ukladaní počítadiel do localStorage:', error);
             }
-
-            return dateKey + String(dailyCounters[dateKey]).padStart(6, '0');
         }
 
         function updateVSDisplay() {
@@ -1098,6 +1104,8 @@
                         'has_note': note.trim() !== ''
                     });
 
+                    commitVS();
+
                     // Aktualizujeme zobrazenie VS pre ďalšie použitie
                     updateVSDisplay();
 
@@ -1148,6 +1156,8 @@
                             'payment_amount': parseFloat(amount),
                             'has_note': note.trim() !== ''
                         });
+
+                        commitVS();
 
                         // Aktualizujeme zobrazenie VS pre ďalšie použitie
                         updateVSDisplay();

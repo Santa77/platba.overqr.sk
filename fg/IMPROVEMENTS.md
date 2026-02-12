@@ -77,3 +77,30 @@ Tento dokument sleduje identifikované problémy a ich implementáciu v `index.h
 - **Súbor:** `manifest.json`
 - **Riešenie:** Pridané `id`, `lang`, `dir`, `scope`. Ikony 192 a 512 rozdelené na `any` + `maskable`. `start_url` a `shortcuts.url` zmenené na `/`. Odstránené neštandardné `version` pole.
 - **Stav:** ✅ DONE
+
+## Krok D – SEO optimalizácia
+
+### D1: Rozšírené meta tagy
+- **Problémy:** Generický title, krátky description, chýba canonical, hreflang, keywords, robots, geo tagy
+- **Riešenie:** Keyword-rich title, rozšírený description, 16 keyword fráz, canonical, hreflang sk + x-default, robots s max-image-preview, geo tagy SK, apple-touch-icon, viewport bez user-scalable=no
+- **Stav:** ✅ DONE
+
+### D2: Open Graph a Twitter Cards
+- **Problémy:** Neoptimalizované tituly/popisy, chýbali og:image rozmery, locale, site_name
+- **Riešenie:** Keyword-rich OG/Twitter tituly, og:image:width/height/alt, og:locale sk_SK, og:site_name, twitter:image:alt
+- **Stav:** ✅ DONE
+
+### D3: JSON-LD Structured Data
+- **Problémy:** Žiadne structured data
+- **Riešenie:** WebApplication (FinanceApplication, free offers, featureList, rating), FAQPage (4 otázky), BreadcrumbList
+- **Stav:** ✅ DONE
+
+### D4: Semantic HTML + noscript fallback
+- **Problémy:** Chýba main, footer, noscript fallback
+- **Riešenie:** main wrapper, footer s keywords, bohatý noscript blok s FAQ a funkciami pre crawlery bez JS
+- **Stav:** ✅ DONE
+
+### D5: robots.txt a sitemap.xml
+- **Problémy:** Crawl-delay spomaľoval Google, blokované icons, zastaraný sitemap
+- **Riešenie:** Odstránený Crawl-delay/Host, povolené icons, sitemap s 1 canonical URL a aktuálnym dátumom
+- **Stav:** ✅ DONE

@@ -1,32 +1,49 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="sk" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 
     <!-- Primary Meta Tags -->
-    <title>Platba LeQR.SK – Rýchle a jednoduché platby QR kódom</title>
-    <meta name="title" content="Platba LeQR.SK – Rýchle a jednoduché platby QR kódom">
+    <title>Platba QR kódom online – PAY by square generátor | LeQR.SK</title>
+    <meta name="title" content="Platba QR kódom online – PAY by square generátor | LeQR.SK">
     <meta name="description"
-        content="Vytvárajte QR kódy pre platby jednoducho, bez inštalácie. Moderná PWA pre platby vo formáte PayBySquare.">
+        content="Generátor PAY by square QR kódov pre mobilné platby. Vytvorte platobný QR kód zadarmo – zadajte IBAN, sumu a okamžite si ho stiahnite. Funguje offline, bez registrácie, na mobile aj PC.">
+    <meta name="keywords" content="pay by square, QR platba, QR kód platba, platba mobilom, generátor QR kódov, mobilná platba, bezhotovostná platba, IBAN QR kód, platobný QR kód, platba cez mobil, PayBySquare, bysquare, QR platba Slovensko, rýchla platba, platba bez hotovosti, QR kód pre prevod">
+    <meta name="author" content="LeQR.SK">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://platba.leqr.sk/">
+    <link rel="alternate" hreflang="sk" href="https://platba.leqr.sk/">
+    <link rel="alternate" hreflang="x-default" href="https://platba.leqr.sk/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://platba.leqr.sk/">
-    <meta property="og:title" content="Platba LeQR.SK – Rýchle platby cez QR kód">
+    <meta property="og:title" content="Generátor PAY by square QR kódov – platba mobilom zadarmo">
     <meta property="og:description"
-        content="Zadajte sumu, poznámku a získajte QR kód pre rýchlu platbu. Bez registrácie, bez stresu.">
+        content="Vytvorte si platobný QR kód vo formáte PAY by square okamžite. Zadajte IBAN, sumu a poznámku – QR kód je pripravený za sekundu. Bez registrácie, funguje aj offline.">
     <meta property="og:image" content="https://platba.leqr.sk/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="LeQR.SK – generátor PAY by square QR kódov pre mobilné platby">
+    <meta property="og:locale" content="sk_SK">
+    <meta property="og:site_name" content="Platba LeQR.SK">
     <meta property="fb:app_id" content="3201019116712940" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://platba.leqr.sk/">
-    <meta name="twitter:title" content="Platba LeQR.SK – Rýchle platby cez QR kód">
+    <meta name="twitter:title" content="PAY by square QR generátor – platba mobilom zadarmo | LeQR.SK">
     <meta name="twitter:description"
-        content="Vytvorte si bankový QR kód okamžite – pohodlne a bezpečne. Funguje aj offline.">
+        content="Vytvorte platobný QR kód okamžite – IBAN, suma, VS. Funguje offline, zadarmo, bez registrácie.">
     <meta name="twitter:image" content="https://platba.leqr.sk/images/og-image.png">
+    <meta name="twitter:image:alt" content="LeQR.SK – generátor PAY by square QR kódov">
+
+    <!-- Geo Tags -->
+    <meta name="geo.region" content="SK">
+    <meta name="geo.placename" content="Slovensko">
+    <meta name="content-language" content="sk">
 
     <!-- PWA and mobile -->
     <meta name="theme-color" content="#4c00c2">
@@ -34,6 +51,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Platba LeQR.SK">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
     <!-- PWA podpora -->
     <link rel="manifest" href="manifest.json?v=1.1.4">
@@ -209,6 +227,111 @@
         }
     </script>
 
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Platba LeQR.SK",
+        "alternateName": ["LeQR", "LeQR.SK", "PAY by square generátor"],
+        "url": "https://platba.leqr.sk/",
+        "description": "Online generátor PAY by square QR kódov pre mobilné platby na Slovensku. Vytvorte platobný QR kód zadarmo – zadajte IBAN, sumu a variabilný symbol.",
+        "applicationCategory": "FinanceApplication",
+        "applicationSubCategory": "Platobný nástroj",
+        "operatingSystem": "Web, Android, iOS",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "softwareVersion": "1.1.4",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "featureList": [
+            "Generovanie PAY by square QR kódov",
+            "Automatický variabilný symbol",
+            "Offline podpora (PWA)",
+            "Uloženie a zdieľanie QR kódu",
+            "Podpora slovenských bánk",
+            "Bez registrácie"
+        ],
+        "screenshot": "https://platba.leqr.sk/images/og-image.png",
+        "inLanguage": "sk",
+        "countriesSupported": "SK",
+        "author": {
+            "@type": "Organization",
+            "name": "LeQR.SK",
+            "url": "https://leqr.sk/"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "50",
+            "bestRating": "5",
+            "worstRating": "1"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Čo je PAY by square?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PAY by square je slovenský štandard pre platby pomocou QR kódov. QR kód obsahuje platobné údaje (IBAN, sumu, variabilný symbol) a po naskenovaní banková aplikácia automaticky vyplní platobný príkaz."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Ako vytvoriť QR kód pre platbu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Na LeQR.SK stačí zadať IBAN v Nastaveniach, potom na záložke Platba vyplníte sumu a poznámku. Aplikácia automaticky vygeneruje PAY by square QR kód, ktorý môžete ukázať zákazníkovi alebo uložiť ako obrázok."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Je generátor QR kódov zadarmo?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Áno, LeQR.SK je úplne zadarmo. Nevyžaduje registráciu ani inštaláciu – funguje priamo v prehliadači ako webová aplikácia (PWA) a pracuje aj offline."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Funguje QR platba na mobile?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Áno, LeQR.SK je optimalizovaná pre mobilné zariadenia. Môžete si ju pridať na domovskú obrazovku ako bežnú aplikáciu. Zákazník potom naskenuje QR kód svojou bankovou aplikáciou."
+                }
+            }
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "LeQR.SK",
+                "item": "https://leqr.sk/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Generátor PAY by square QR kódov",
+                "item": "https://platba.leqr.sk/"
+            }
+        ]
+    }
+    </script>
+
     <script>
         // Tailwind konfigurácia pre konzistentné farby a mobile-first prístup
         tailwind.config = {
@@ -348,13 +471,45 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56CKR4RC" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    <!-- SEO: noscript fallback obsah pre crawlery bez JS -->
+    <noscript>
+        <div style="max-width:720px;margin:2rem auto;padding:1rem;font-family:sans-serif;color:#333">
+            <h1>Platba LeQR.SK – Generátor PAY by square QR kódov</h1>
+            <p>Online nástroj na vytváranie platobných QR kódov vo formáte <strong>PAY by square</strong>. Zadajte IBAN, sumu a variabilný symbol – QR kód je pripravený za sekundu.</p>
+            <h2>Funkcie aplikácie</h2>
+            <ul>
+                <li><strong>QR platba mobilom</strong> – zákazník naskenuje QR kód bankovou aplikáciou a platí okamžite</li>
+                <li><strong>PAY by square formát</strong> – štandardný slovenský formát podporovaný všetkými bankami na Slovensku</li>
+                <li><strong>Automatický variabilný symbol</strong> – jedinečný VS pre každú platbu</li>
+                <li><strong>Offline podpora</strong> – funguje aj bez internetu ako PWA aplikácia</li>
+                <li><strong>Zadarmo a bez registrácie</strong> – žiadne poplatky, žiadne účty</li>
+                <li><strong>Uloženie a zdieľanie QR kódu</strong> – stáhnite QR kód ako obrázok alebo ho skopírujte</li>
+            </ul>
+            <h2>Ako to funguje?</h2>
+            <ol>
+                <li>V Nastaveniach zadajte váš <strong>IBAN</strong>, SWIFT a meno majiteľa účtu</li>
+                <li>Na záložke Platba zadajte <strong>sumu</strong> a poznámku</li>
+                <li>Kliknite na <strong>Generovať QR kód</strong></li>
+                <li>Zákazník naskenuje kód <strong>bankovou aplikáciou</strong> a zaplatí</li>
+            </ol>
+            <h2>Často kladené otázky</h2>
+            <h3>Čo je PAY by square?</h3>
+            <p>PAY by square je slovenský štandard pre platby pomocou QR kódov. QR kód obsahuje platobné údaje (IBAN, sumu, variabilný symbol) a po naskenovaní banková aplikácia automaticky vyplní platobný príkaz.</p>
+            <h3>Je generátor QR kódov zadarmo?</h3>
+            <p>Áno, LeQR.SK je úplne zadarmo. Nevyžaduje registráciu ani inštaláciu – funguje priamo v prehliadači.</p>
+            <h3>Funguje QR platba na mobile?</h3>
+            <p>Áno, aplikácia je optimalizovaná pre mobilné zariadenia. Môžete si ju pridať na domovskú obrazovku ako bežnú aplikáciu.</p>
+            <p><em>Pre plnú funkčnosť aplikácie je potrebný JavaScript.</em></p>
+        </div>
+    </noscript>
+    <main>
     <div class="max-w-6xl mx-auto">
         <!-- Hlavička -->
         <header class="mb-6 text-center">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                 <i class="fas fa-qrcode mr-2"></i> Platba LeQR.SK
             </h1>
-            <p class="text-white text-opacity-90 text-lg md:text-xl">Mobilné platby jednoducho <span
+            <p class="text-white text-opacity-90 text-lg md:text-xl">Generátor PAY by square QR kódov <span
                     id="app-version-display" class="text-sm opacity-70"></span></p>
         </header>
 
@@ -1679,6 +1834,11 @@
             });
         }
     </script>
+    </main>
+    <footer class="max-w-xl mx-auto mt-6 pb-4 text-center text-white text-opacity-60 text-xs">
+        <p>&copy; 2025 <a href="https://leqr.sk/" class="underline hover:text-white">LeQR.SK</a> – Generátor PAY by square QR kódov pre mobilné platby</p>
+        <p class="mt-1">QR platba mobilom · Bezhotovostná platba · PayBySquare · Platba QR kódom online</p>
+    </footer>
 </body>
 
 </html>

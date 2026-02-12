@@ -4,28 +4,12 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-    <!-- Hlavná stránka -->
+    <!-- Hlavná stránka - generátor PAY by square QR kódov -->
     <url>
         <loc>https://platba.leqr.sk/</loc>
-        <lastmod>2025-06-05</lastmod>
+        <lastmod>2026-02-12</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
-    </url>
-
-    <!-- Možné alternatívne url počas používania -->
-    <url>
-        <loc>https://platba.leqr.sk/index.html</loc>
-        <lastmod>2025-06-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <!-- Manifest súbor pre PWA -->
-    <url>
-        <loc>https://platba.leqr.sk/manifest.json</loc>
-        <lastmod>2025-06-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.5</priority>
     </url>
 
 </urlset>

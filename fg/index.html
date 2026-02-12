@@ -441,44 +441,43 @@
                 </div>
 
                 <!-- Formulár nastavení -->
-                <div id="settings-form" class="p-5 hidden">
-                    <h2 class="text-xl font-bold text-primary-700 mb-4 pb-2 border-b border-gray-200">Bankové údaje</h2>
+                <div id="settings-form" class="p-4 sm:p-5 hidden">
+                    <h2 class="text-lg font-bold text-primary-700 mb-3 pb-2 border-b border-gray-200">Bankové údaje</h2>
 
                     <!-- IBAN -->
-                    <div class="mb-4">
-                        <label for="iban" class="block text-sm font-medium text-gray-700 mb-2">IBAN účtu</label>
+                    <div class="mb-3">
+                        <label for="iban" class="block text-sm font-medium text-gray-700 mb-1">IBAN účtu</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-university text-gray-400"></i>
                             </div>
                             <input type="text" id="iban" placeholder="SK7700000000000000000000" maxlength="34"
-                                class="uppercase block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                                class="uppercase block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
                         <div id="iban-error" class="mt-1 text-sm text-red-600"></div>
                     </div>
 
                     <!-- SWIFT/BIC -->
-                    <div class="mb-4">
-                        <label for="swift" class="block text-sm font-medium text-gray-700 mb-2">SWIFT/BIC kód</label>
+                    <div class="mb-3">
+                        <label for="swift" class="block text-sm font-medium text-gray-700 mb-1">SWIFT/BIC kód</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-globe text-gray-400"></i>
                             </div>
                             <input type="text" id="swift" placeholder="CEKOSKBX" maxlength="11"
-                                class="uppercase block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                                class="uppercase block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
                     </div>
 
                     <!-- Meno majiteľa účtu -->
-                    <div class="mb-6">
-                        <label for="recipient" class="block text-sm font-medium text-gray-700 mb-2">Meno/Názov majiteľa
-                            účtu</label>
+                    <div class="mb-4">
+                        <label for="recipient" class="block text-sm font-medium text-gray-700 mb-1">Meno/Názov majiteľa účtu</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-building text-gray-400"></i>
                             </div>
                             <input type="text" id="recipient" placeholder="Meno alebo názov majiteľa účtu"
-                                class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
                         <div id="recipient-error" class="mt-1 text-sm text-red-600"></div>
                     </div>

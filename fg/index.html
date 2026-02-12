@@ -36,7 +36,7 @@
     <meta name="apple-mobile-web-app-title" content="Platba LeQR.SK">
 
     <!-- PWA podpora -->
-    <link rel="manifest" href="manifest.json?v=1.1.3">
+    <link rel="manifest" href="manifest.json?v=1.1.4">
     
     <!-- QR kód s logom - štýly -->
     <style>
@@ -74,7 +74,7 @@
             left: 0;
             width: 100%;
             height: 60px !important;
-            background-image: url('images/pay-bottom-dark.png');
+            background-image: url('images/pay-bottom-dark.png?v=1.1.4');
             background-size: 315px auto; /* Väčšia šírka pre logo */
             background-position: center bottom;
             background-repeat: no-repeat;
@@ -99,7 +99,7 @@
     <!-- Import bysquare as ES Module -->
     <script type="module">
         // Import bysquare knižnice
-        import { encode, decode, PaymentOptions, CurrencyCode } from "https://esm.sh/bysquare@latest";
+        import { encode, decode, PaymentOptions, CurrencyCode } from "https://esm.sh/bysquare@3.2.0";
 
         // Sprístupníme knižnicu globálne, aby ju mohli ostatné skripty používať
         window.bysquareModule = {
@@ -122,35 +122,9 @@
     <!-- Registrácia Service Worker-a pre offline funkcionalitu -->
     <script>
         if ('serviceWorker' in navigator) {
-            // Sledovanie správ zo service workera
-            navigator.serviceWorker.addEventListener('message', function(event) {
-                // Ak service worker detekoval novú verziu
-                if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
-                    console.log('Nová verzia je dostupná:', event.data.newVersion);
-                    
-                    // Prinútiť aktualizáciu service workera
-                    if (navigator.serviceWorker.controller) {
-                        // Upozorniť service worker, aby sa aktualizoval
-                        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-                        
-                        // Sledovať udalosť aktualizácie service workera
-                        dataLayer.push({
-                            'event': 'service_worker_update_initiated',
-                            'from_version': event.data.currentVersion,
-                            'to_version': event.data.newVersion
-                        });
-                        
-                        // Prinajhoršom občerstvi stránku po 1 sekunde
-                        setTimeout(function() {
-                            reloadWithCacheBusting();
-                        }, 1000);
-                    }
-                }
-            });
-            
             window.addEventListener('load', function () {
                 // Nová registrácia s cache-busting parametrom
-                navigator.serviceWorker.register('sw.js?v=1.1.3').then(function (registration) {
+                navigator.serviceWorker.register('sw.js?v=1.1.4').then(function (registration) {
                     // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     
@@ -161,8 +135,17 @@
                     let refreshing = false;
                     navigator.serviceWorker.addEventListener('controllerchange', function() {
                         if (refreshing) return;
+                        const updatingTo = sessionStorage.getItem('sw_updating_to');
+                        if (updatingTo) {
+                            const alreadyReloaded = sessionStorage.getItem('sw_reloaded_to');
+                            if (alreadyReloaded === updatingTo) {
+                                console.log('[SW] controllerchange ignored (already reloaded to):', updatingTo);
+                                return;
+                            }
+                            sessionStorage.setItem('sw_reloaded_to', updatingTo);
+                        }
                         refreshing = true;
-                        console.log('Service worker vymenený - občerstvujem stránku');
+                        console.log('[SW] controllerchange -> reloading page', { updatingTo });
                         dataLayer.push({ 'event': 'service_worker_controller_changed' });
                         reloadWithCacheBusting();
                     });
@@ -677,9 +660,6 @@
             }
         }
 
-        // Načítame nastavenia pri štarte stránky
-        window.addEventListener('DOMContentLoaded', loadSettings);
-
         function saveSettings() {
             const inputIban = document.getElementById('iban').value.trim();
             const swift = document.getElementById('swift').value.trim();
@@ -748,17 +728,16 @@
                 });
             }
 
-            document.getElementById('settings-success').textContent = 'Nastavenia uložené!';
-            setTimeout(() => {
-                document.getElementById('settings-success').textContent = '';
-            }, 2000);
+            const successEl = document.getElementById('settings-success');
+            successEl.textContent = 'Nastavenia uložené!';
+            successEl.classList.remove('hidden');
 
-            // Uložíme a prejdeme na záložku platby
+            // Uložíme a prejdeme na záložku platby po 1.5s
             setTimeout(() => {
                 switchTab('payment');
-                document.getElementById('settings-success').classList.add('hidden');
-                document.getElementById('settings-success').textContent = '';
-            }, 1000);
+                successEl.classList.add('hidden');
+                successEl.textContent = '';
+            }, 1500);
         }
 
         function persistSettings() {
@@ -927,10 +906,17 @@
 
             dailyCounters[dateKey]++;
 
+            // Prune kľúčov starších ako 7 dní
+            const keys = Object.keys(dailyCounters);
+            if (keys.length > 7) {
+                const cutoff = new Date(today.getTime() - 7 * 86400000);
+                const cutoffKey = cutoff.toISOString().slice(2, 10).replace(/-/g, '');
+                keys.forEach(k => { if (k < cutoffKey) delete dailyCounters[k]; });
+            }
+
             // Uložíme počítadlá do localStorage
             try {
                 localStorage.setItem('paybySquareDailyCounters', JSON.stringify(dailyCounters));
-                console.log('Počítadlá uložené do localStorage:', dailyCounters);
             } catch (error) {
                 console.error('Chyba pri ukladaní počítadiel do localStorage:', error);
             }
@@ -1344,18 +1330,6 @@
                 'has_note': note.trim() !== ''
             });
 
-            // Check if settings are available
-            if (!settings.iban) {
-                alert('Prosím, nastavte IBAN v nastaveniach.');
-
-                // Track missing settings error
-                dataLayer.push({
-                    'event': 'qr_generation_error',
-                    'error_type': 'missing_iban'
-                });
-                return;
-            }
-
             // Check if bysquare module is loaded
             if (!window.bysquareLoaded) {
                 console.log('Bysquare module not yet loaded, waiting...');
@@ -1527,71 +1501,13 @@
                     document.getElementById('qr-panel').classList.remove('hidden');
                 } catch (e) {
                     console.error('Chyba pri generovaní QR kódu:', e);
+                    showErrorModal('Chyba QR', 'Nepodarilo sa vygenerovať QR kód. Skúste obnoviť stránku.');
 
-                    // Alternatívny spôsob generovania QR kódu
-                    try {
-                        // Skúsime použiť jednoduchšie riešenie s createElement
-                        const img = document.createElement('img');
-
-                        // Vytvoríme jednoduchší QR kód pomocou API služby
-                        // Používame Google Chart API pre QR kódy pre jednoduchší prístup
-                        const encodedData = encodeURIComponent(payBySquareString);
-                        img.src = `https://chart.googleapis.com/chart?cht=qr&chl=${encodedData}&chs=256x256&chld=L|1`;
-                        img.width = 256;
-                        img.height = 256;
-                        img.alt = 'QR kód pre platbu';
-                        img.style.cursor = 'pointer';
-                        img.title = 'Kliknite pre návrat do platby';
-                        img.onclick = backToPaymentForm;
-
-                        qrContainer.appendChild(img);
-
-                        // Zobrazíme QR kód a informácie
-                        document.getElementById('qr-placeholder').classList.add('hidden');
-                        document.getElementById('qr-code').classList.remove('hidden');
-                        document.getElementById('qr-actions').classList.remove('hidden');
-                        document.getElementById('qr-info').classList.remove('hidden');
-
-                        // Zobraziť platebné informácie
-                        document.getElementById('qr-amount').textContent = noAmount ? 'Bez sumy' : `${parseFloat(amount).toFixed(2)} €`;
-                        document.getElementById('qr-vs').textContent = noVS ? 'Bez VS' : vs;
-                        document.getElementById('qr-note').textContent = note || 'Bez poznámky';
-                        document.getElementById('qr-iban').textContent = formatIBAN(settings.iban);
-
-                        // Calculate QR generation time
-                        const qrGenerationTime = performance.now() - qrGenerationStartTime;
-
-                        // Track successful QR generation with fallback method
-                        dataLayer.push({
-                            'event': 'qr_code_generated',
-                            'generation_time_ms': Math.round(qrGenerationTime),
-                            'qr_method': 'google_chart_api',
-                            'fallback_qr_method_used': true,
-                            'payment_amount': noAmount ? null : parseFloat(amount),
-                            'has_note': note.trim() !== ''
-                        });
-
-                        if (!noVS) {
-                            commitVS();
-                        }
-
-                        // Aktualizujeme zobrazenie VS pre ďalšie použitie
-                        updateVSDisplay();
-
-                        // Skryjeme okno 1 a zobrazíme okno 2
-                        document.getElementById('payment-panel').classList.add('hidden');
-                        document.getElementById('qr-panel').classList.remove('hidden');
-                    } catch (backupError) {
-                        console.error('Záložné riešenie QR kódu zlyhalo:', backupError);
-                        alert('Nepodarilo sa vygenerovať QR kód. Skontrolujte konzolu pre viac informácií.');
-
-                        // Track fallback QR generation error
-                        dataLayer.push({
-                            'event': 'qr_generation_error',
-                            'error_type': 'fallback_method_failed',
-                            'error_details': backupError.toString()
-                        });
-                    }
+                    dataLayer.push({
+                        'event': 'qr_generation_error',
+                        'error_type': 'qrcode_generator_failed',
+                        'error_details': e.toString()
+                    });
                 }
             }
         }
@@ -1651,7 +1567,52 @@
         }
 
         // Kód pre detekciu aktualizácií aplikácie
-        const APP_VERSION = '1.1.3';
+        const APP_VERSION = '1.1.4';
+
+        let latestAvailableVersion = null;
+
+        async function requestUpdateNow() {
+            try {
+                console.log('[SW] requestUpdateNow clicked', { latestAvailableVersion });
+                if (latestAvailableVersion) {
+                    sessionStorage.setItem('sw_updating_to', latestAvailableVersion);
+                }
+
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (!registration) {
+                    console.warn('[SW] requestUpdateNow: no registration found, doing cache-busting reload');
+                    reloadWithCacheBusting();
+                    return;
+                }
+
+                console.log('[SW] requestUpdateNow: registration state', {
+                    active: !!registration.active,
+                    installing: !!registration.installing,
+                    waiting: !!registration.waiting
+                });
+
+                const target = registration.waiting || registration.installing;
+                if (target) {
+                    console.log('[SW] requestUpdateNow: sending SKIP_WAITING to', registration.waiting ? 'waiting' : 'installing');
+                    target.postMessage({ type: 'SKIP_WAITING' });
+                    return;
+                }
+
+                console.log('[SW] requestUpdateNow: no waiting/installing SW, calling registration.update()');
+                await registration.update();
+                if (registration.waiting) {
+                    console.log('[SW] requestUpdateNow: after update(), sending SKIP_WAITING to waiting');
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    return;
+                }
+
+                console.warn('[SW] requestUpdateNow: still no waiting SW after update(), reloading');
+                reloadWithCacheBusting();
+            } catch (e) {
+                console.error('SW update request failed:', e);
+                reloadWithCacheBusting();
+            }
+        }
 
         // Zobrazenie verzie v hlavičke
         document.addEventListener('DOMContentLoaded', function () {
@@ -1680,10 +1641,19 @@
                 }
 
                 if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                    console.log('[SW] UPDATE_AVAILABLE received (ui handler):', event.data);
                     // Zobraziť užívateľovi notifikáciu o dostupnej aktualizácii
                     const notification = document.getElementById('update-notification');
                     if (notification) {
-                        notification.innerHTML = `Je dostupná nová verzia (${event.data.newVersion})! <button class=\"bg-white text-secondary-700 px-2 py-1 rounded ml-3 font-medium\" onclick=\"reloadWithCacheBusting()\">Aktualizovať teraz</button>`;
+                        latestAvailableVersion = event.data.newVersion;
+                        notification.textContent = '';
+                        const txt = document.createTextNode('Je dostupná nová verzia (' + event.data.newVersion + ')! ');
+                        const btn = document.createElement('button');
+                        btn.className = 'bg-white text-secondary-700 px-2 py-1 rounded ml-3 font-medium';
+                        btn.textContent = 'Aktualizovať teraz';
+                        btn.addEventListener('click', requestUpdateNow);
+                        notification.appendChild(txt);
+                        notification.appendChild(btn);
                         notification.classList.remove('hidden');
 
                         // Sledovať notifikáciu v GTM
@@ -1701,38 +1671,18 @@
                 setTimeout(() => {
                     if (navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage({
-                            type: 'CHECK_VERSION'
-                        });
-                    }
-                }, 1000);
-                // Intervalová kontrola každých 30 minút
-                setInterval(() => {
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'CHECK_VERSION'
-                        });
-                    }
-                }, 1800000); // 30 minút
-            });
-
-            // Kontrola aktualizácií po načítaní stránky
-            window.addEventListener('load', function () {
-                setTimeout(() => {
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
                             type: 'CHECK_UPDATES'
                         });
                     }
-                }, 3000); // Odložiť kontrolu o 3 sekundy
+                }, 3000);
 
-                // Nastaviť periodickú kontrolu (každú hodinu)
                 setInterval(() => {
                     if (navigator.onLine && navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage({
                             type: 'CHECK_UPDATES'
                         });
                     }
-                }, 60 * 60 * 1000); // 1 hodina
+                }, 1800000); // 30 minút
             });
         }
     </script>

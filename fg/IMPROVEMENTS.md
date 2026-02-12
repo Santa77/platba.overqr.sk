@@ -1,0 +1,79 @@
+# Plán vylepšení – Platba LeQR.SK
+
+Tento dokument sleduje identifikované problémy a ich implementáciu v `index.html` a `sw.js`.
+
+## Krok A – Kritické opravy
+
+### A1: Zlúčiť duplicitné message handlery a CHECK_UPDATES
+- **Problém:** Dva oddelené `message` listenery pre `UPDATE_AVAILABLE` (head + bottom). Dva `load` listenery posielajú `CHECK_UPDATES` (po 1s + 30min interval, po 3s + 1h interval).
+- **Súbor:** `index.html`
+- **Riešenie:** Odstránený head handler. Zlúčené oba load listenery do jedného: `CHECK_UPDATES` po 3s + interval každých 30 min.
+- **Stav:** ✅ DONE
+
+### A2: Opraviť settings-success notifikáciu
+- **Problém:** `#settings-success` div má triedu `hidden`, ale v `saveSettings()` sa nikdy nevolá `classList.remove('hidden')`.
+- **Súbor:** `index.html`
+- **Riešenie:** Pridané `classList.remove('hidden')`, zobrazenie na 1.5s potom skrytie + prepnutie na tab Platba.
+- **Stav:** ✅ DONE
+
+### A3: Odstrániť mŕtvy Google Chart API fallback
+- **Problém:** Google Chart Image API je vypnuté. Fallback nikdy nebude fungovať.
+- **Súbor:** `index.html`
+- **Riešenie:** Celý catch blok nahradený jednoduchým `showErrorModal` + GTM tracking.
+- **Stav:** ✅ DONE
+
+### A4: Pinout bysquare na konkrétnu verziu
+- **Problém:** `bysquare@latest` sa môže kedykoľvek zmeniť a zlomiť aplikáciu.
+- **Súbory:** `index.html` (import), `sw.js` (urlsToCache)
+- **Riešenie:** Zmenené na `bysquare@3.2.0` v oboch súboroch.
+- **Stav:** ✅ DONE
+
+### A5: Odstrániť duplicitné volanie loadSettings()
+- **Problém:** `loadSettings()` sa volala 2× (window.onload + DOMContentLoaded listener).
+- **Súbor:** `index.html`
+- **Riešenie:** Odstránený `addEventListener('DOMContentLoaded', loadSettings)`. Ponechaný len `window.onload`.
+- **Stav:** ✅ DONE
+
+## Krok B – Stredné priority a vylepšenia
+
+### B1: event.waitUntil(self.skipWaiting()) v SW
+- **Problém:** `self.skipWaiting()` vracia Promise, ale nie je obalené v `event.waitUntil()`.
+- **Súbor:** `sw.js`
+- **Riešenie:** Zmenené na `event.waitUntil(self.skipWaiting())`.
+- **Stav:** ✅ DONE
+
+### B2: Sanitizácia innerHTML v update notifikácii
+- **Problém:** `notification.innerHTML` vkladá `event.data.newVersion` priamo. Potenciálne XSS riziko.
+- **Súbor:** `index.html`
+- **Riešenie:** Nahradené programatickou DOM konštrukciou (`createTextNode` + `createElement('button')`).
+- **Stav:** ✅ DONE
+
+### B3: Prune starých dailyCounters
+- **Problém:** Staré kľúče v `dailyCounters` (localStorage) sa nikdy nemažú.
+- **Súbor:** `index.html`
+- **Riešenie:** Pridaný prune v `commitVS()` — kľúče staršie ako 7 dní sa automaticky mažú.
+- **Stav:** ✅ DONE
+
+### B4: Odstrániť dead code
+- **Problém:** Duplicitný IBAN check (nedosiahnuteľný). `isSw` check v SW fetch handleri (dead code).
+- **Súbory:** `index.html`, `sw.js`
+- **Riešenie:** Odstránené oba kusy mŕtveho kódu.
+- **Stav:** ✅ DONE
+
+### B5: Cache-busting pre pay-bottom-dark.png + var→const v SW
+- **Problém:** CSS `background-image` nemá cache-busting parameter. `var` v SW activate handleri.
+- **Súbory:** `index.html`, `sw.js`
+- **Riešenie:** Pridané `?v=1.1.3` do CSS URL. Zmenené `var` na `const`.
+- **Stav:** ✅ DONE
+
+## Krok C – Manifest opravy
+
+### C1: Opravy manifest.json
+- **Problémy:**
+  - `purpose: "any maskable"` v jednom zázname — prehliadač nesprávne použije maskable ikonu pre `any` kontext
+  - Chýba `id`, `lang`, `dir`, `scope`
+  - `start_url` a `shortcuts.url` mali hardcoded `?v=1.1.3` — spôsobovalo zmenu identity PWA pri verzii upgrade
+  - `version` nie je štandardné PWA pole (neškodí, ale nemá efekt)
+- **Súbor:** `manifest.json`
+- **Riešenie:** Pridané `id`, `lang`, `dir`, `scope`. Ikony 192 a 512 rozdelené na `any` + `maskable`. `start_url` a `shortcuts.url` zmenené na `/`. Odstránené neštandardné `version` pole.
+- **Stav:** ✅ DONE

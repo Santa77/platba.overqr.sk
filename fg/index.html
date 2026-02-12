@@ -376,67 +376,61 @@
                 </div>
 
                 <!-- Formulár platby -->
-                <div id="payment-form" class="p-5">
-                    <h2 class="text-xl font-bold text-primary-700 mb-4 pb-2 border-b border-gray-200">Vytvorenie platobného QR
-                    </h2>
+                <div id="payment-form" class="p-4 sm:p-5">
+                    <h2 class="text-lg font-bold text-primary-700 mb-3 pb-2 border-b border-gray-200">Vytvorenie platobného QR</h2>
 
                     <!-- Suma -->
-                    <div class="mb-4">
-                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Suma (€)</label>
+                    <div class="mb-3">
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="amount" class="block text-sm font-medium text-gray-700">Suma (€)</label>
+                            <label class="flex items-center gap-1.5 select-none cursor-pointer">
+                                <input id="no-amount" type="checkbox"
+                                    class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="text-xs text-gray-500">Bez sumy</span>
+                            </label>
+                        </div>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-euro-sign text-gray-400"></i>
                             </div>
                             <input type="text" inputmode="decimal" pattern="[0-9]+(\.[0-9]{0,2})?" id="amount"
                                 min="0.01" placeholder="5.00"
-                                class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
                                 onkeypress="return isNumberKey(event)" onpaste="return validatePaste(event)">
                         </div>
                         <div id="amount-error" class="mt-1 text-sm text-red-600"></div>
-
-                        <label class="mt-3 flex items-start gap-3 select-none cursor-pointer">
-                            <input id="no-amount" type="checkbox"
-                                class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                            <span class="text-sm text-gray-700">
-                                <span class="font-medium">Bez sumy</span>
-                                <span class="block text-xs text-gray-500">Suma nebude súčasťou QR kódu</span>
-                            </span>
-                        </label>
                     </div>
 
                     <!-- Poznámka -->
-                    <div class="mb-4">
-                        <label for="note" class="block text-sm font-medium text-gray-700 mb-2">Poznámka k platbe <span id="note-required" class="hidden text-red-600">*</span></label>
+                    <div class="mb-3">
+                        <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Poznámka k platbe <span id="note-required" class="hidden text-red-600">*</span></label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-comment-alt text-gray-400"></i>
                             </div>
                             <input type="text" id="note" maxlength="35" placeholder="Popis platby (max 35 znakov)"
-                                class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200">
                         </div>
                         <div id="note-error" class="mt-1 text-sm text-red-600"></div>
                     </div>
 
                     <!-- Variabilný symbol -->
-                    <div class="mb-6">
-                        <label for="vs-display" class="block text-sm font-medium text-gray-700 mb-2">Variabilný
-                            symbol</label>
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="vs-display" class="block text-sm font-medium text-gray-700">Variabilný symbol</label>
+                            <label class="flex items-center gap-1.5 select-none cursor-pointer">
+                                <input id="no-vs" type="checkbox"
+                                    class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="text-xs text-gray-500">Bez VS</span>
+                            </label>
+                        </div>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-hashtag text-gray-400"></i>
                             </div>
                             <input type="text" id="vs-display" readonly placeholder="Automaticky generovaný"
-                                class="block w-full pl-10 pr-4 py-3 border border-gray-300 bg-gray-50 rounded-lg cursor-not-allowed transition duration-200">
+                                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 bg-gray-50 rounded-lg cursor-not-allowed transition duration-200">
                         </div>
-
-                        <label class="mt-3 flex items-start gap-3 select-none cursor-pointer">
-                            <input id="no-vs" type="checkbox"
-                                class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                            <span class="text-sm text-gray-700">
-                                <span class="font-medium">Bez VS</span>
-                                <span class="block text-xs text-gray-500">Variabilný symbol nebude súčasťou QR kódu</span>
-                            </span>
-                        </label>
                     </div>
 
                     <!-- Tlačidlo generovať QR -->

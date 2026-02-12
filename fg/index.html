@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- Primary Meta Tags -->
     <title>Platba QR kódom online – PAY by square generátor | LeQR.SK</title>
@@ -54,7 +54,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
     <!-- PWA podpora -->
-    <link rel="manifest" href="manifest.json?v=1.1.4">
+    <link rel="manifest" href="manifest.json?v=1.1.5">
     
     <!-- QR kód s logom - štýly -->
     <style>
@@ -92,7 +92,7 @@
             left: 0;
             width: 100%;
             height: 60px !important;
-            background-image: url('images/pay-bottom-dark.png?v=1.1.4');
+            background-image: url('images/pay-bottom-dark.png?v=1.1.5');
             background-size: 315px auto; /* Väčšia šírka pre logo */
             background-position: center bottom;
             background-repeat: no-repeat;
@@ -142,7 +142,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 // Nová registrácia s cache-busting parametrom
-                navigator.serviceWorker.register('sw.js?v=1.1.4').then(function (registration) {
+                navigator.serviceWorker.register('sw.js?v=1.1.5').then(function (registration) {
                     // Registrácia bola úspešná
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     
@@ -240,7 +240,7 @@
         "applicationSubCategory": "Platobný nástroj",
         "operatingSystem": "Web, Android, iOS",
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.1.4",
+        "softwareVersion": "1.1.5",
         "offers": {
             "@type": "Offer",
             "price": "0",
@@ -393,6 +393,17 @@
         });
     </script>
     <style>
+        /* Zabránenie horizontálneho scrollovania a bounce efektu */
+        html {
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
+        }
+        body {
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            touch-action: pan-y;
+        }
+
         /* Custom štýly, ktoré nie je možné dosiahnuť pomocou Tailwind */
         .animated-gradient {
             background: linear-gradient(-45deg, #4f83f7, #2e4fda, #a55af5, #7e2ed1);
@@ -551,6 +562,114 @@
         </div>
     </div>
 
+    <!-- About / O aplikácii Modal -->
+    <div id="about-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+        <div class="bg-white rounded-lg max-w-md w-full mx-4 p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-info-circle mr-2 text-primary-600"></i>O aplikácii</h3>
+                <button onclick="closeAboutModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="text-sm text-gray-600 space-y-4">
+                <!-- Popis -->
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-qrcode text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-base">Platba LeQR.SK</p>
+                            <p class="text-xs text-gray-500">Verzia <span id="about-app-version"></span></p>
+                        </div>
+                    </div>
+                    <p class="text-xs leading-relaxed">Jednoduchý generátor platobných QR kódov vo formáte <strong>PAY by square</strong> – slovenský štandard podporovaný všetkými bankami na Slovensku. Aplikácia funguje priamo v prehliadači, aj offline.</p>
+                </div>
+
+                <!-- Ako to funguje -->
+                <div class="bg-blue-50 rounded-lg p-3">
+                    <h4 class="font-semibold text-gray-800 mb-2"><i class="fas fa-magic mr-1 text-blue-500"></i> Ako to funguje?</h4>
+                    <ol class="text-xs space-y-1.5 list-decimal list-inside text-gray-600">
+                        <li>V <strong>Nastaveniach</strong> zadajte IBAN, SWIFT a meno majiteľa účtu</li>
+                        <li>Na záložke <strong>Platba</strong> zadajte sumu a poznámku</li>
+                        <li>Kliknite na <strong>Generovať QR kód</strong></li>
+                        <li>Zákazník naskenuje kód <strong>bankovou aplikáciou</strong> a zaplatí</li>
+                    </ol>
+                </div>
+
+                <!-- Funkcie -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-2"><i class="fas fa-star mr-1 text-yellow-500"></i> Hlavné funkcie</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>QR platba vo formáte PAY by square</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Automatický variabilný symbol</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Funguje offline (PWA)</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Uloženie a zdieľanie QR</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Zadarmo, bez registrácie</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-check-circle text-green-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Inštalácia na domovskú obrazovku</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Údaje a súkromie -->
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <h4 class="font-semibold text-gray-800 mb-2"><i class="fas fa-shield-alt mr-1 text-primary-600"></i> Údaje a súkromie</h4>
+                    <div class="text-xs space-y-1.5 text-gray-600">
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-lock text-green-600 mt-0.5 flex-shrink-0"></i>
+                            <span><strong>IBAN, meno, SWIFT</strong> – uložené len vo vašom zariadení (localStorage)</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-lock text-green-600 mt-0.5 flex-shrink-0"></i>
+                            <span><strong>Nastavenia platieb</strong> – uložené len lokálne, žiadny server</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-lock text-green-600 mt-0.5 flex-shrink-0"></i>
+                            <span><strong>QR kódy</strong> – generované priamo v prehliadači, neodosielame ich</span>
+                        </div>
+                        <div class="flex items-start gap-1.5">
+                            <i class="fas fa-chart-bar text-blue-500 mt-0.5 flex-shrink-0"></i>
+                            <span><strong>Analytika</strong> – len so súhlasom (Google Analytics, anonymizované)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kontakt -->
+                <div class="flex items-center justify-between pt-2 border-t border-gray-200">
+                    <div class="text-xs text-gray-500">
+                        <i class="fas fa-envelope mr-1"></i> Kontakt: <a id="about-contact-email" href="#" class="text-primary-600 hover:underline"></a>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        &copy; 2025 LeQR.SK
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeAboutModal()"
+                class="mt-4 w-full py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-medium focus:outline-none">
+                Zavrieť
+            </button>
+        </div>
+    </div>
+
     <!-- Modal okno pre chyby -->
     <div id="error-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
@@ -609,7 +728,10 @@
     <main>
     <div class="max-w-6xl mx-auto">
         <!-- Hlavička -->
-        <header class="mb-6 text-center">
+        <header class="mb-6 text-center relative">
+            <button type="button" onclick="showAboutModal()" class="absolute top-0 right-0 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" title="O aplikácii">
+                <i class="fas fa-info-circle text-lg"></i>
+            </button>
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                 <i class="fas fa-qrcode mr-2"></i> Platba LeQR.SK
             </h1>
@@ -945,6 +1067,37 @@
 
         // Inicializácia cookie consent pri načítaní
         document.addEventListener('DOMContentLoaded', initCookieConsent);
+
+        // === About Modal funkcie ===
+        function showAboutModal() {
+            const modal = document.getElementById('about-modal');
+            modal.classList.remove('hidden');
+
+            // Vyplníme verziu
+            const versionEl = document.getElementById('about-app-version');
+            const displayVersion = document.getElementById('app-version-display');
+            if (versionEl && displayVersion) {
+                versionEl.textContent = displayVersion.textContent || '1.1.5';
+            }
+
+            // Vyplníme kontaktný email
+            const emailEl = document.getElementById('about-contact-email');
+            if (emailEl && !emailEl.dataset.filled) {
+                const user = ['in', 'fo'].join('');
+                const domain = ['san', 'ta', '3d'].join('');
+                const tld = ['s', 'k'].join('');
+                const email = `${user}@${domain}.${tld}`;
+                emailEl.textContent = email;
+                emailEl.href = `mailto:${email}`;
+                emailEl.dataset.filled = '1';
+            }
+
+            dataLayer.push({ 'event': 'about_modal_opened' });
+        }
+
+        function closeAboutModal() {
+            document.getElementById('about-modal').classList.add('hidden');
+        }
 
         function switchTab(tab) {
             // Skryjeme všetky formuláre
@@ -1922,7 +2075,7 @@
         }
 
         // Kód pre detekciu aktualizácií aplikácie
-        const APP_VERSION = '1.1.4';
+        const APP_VERSION = '1.1.5';
 
         let latestAvailableVersion = null;
 

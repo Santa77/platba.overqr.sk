@@ -9,159 +9,151 @@ if ($NewVersion -notmatch '^\d+\.\d+\.\d+$') {
     exit 1
 }
 
+$today = Get-Date -Format 'yyyy-MM-dd'
+
 # Zobraziť začiatočnú správu
 Write-Host "===== Aktualizácia verzie aplikácie LeQR.SK =====" -ForegroundColor Cyan
-Write-Host "Nová verzia: $NewVersion" -ForegroundColor Yellow
+Write-Host "Nová verzia: $NewVersion ($today)" -ForegroundColor Yellow
 Write-Host ""
 
-# Pripraviť záložnú kópiu súborov pred zmenou
-$backupFolder = ".\version_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
-$filesToBackup = @("version.json", "sw.js", "manifest.json", "index.html")
+# Pripraviť záložnú kópiu (rolling – vždy len 1 priečinok)
+$backupFolder = ".\version_backup"
+$filesToBackup = @("version.json", "sw.js", "index.html", "sitemap.xml")
 
-if (!(Test-Path $backupFolder)) {
-    New-Item -Path $backupFolder -ItemType Directory | Out-Null
-    Write-Host "Vytvorený záložný adresár: $backupFolder" -ForegroundColor Gray
-    
-    foreach ($file in $filesToBackup) {
-        if (Test-Path $file) {
-            Copy-Item $file -Destination $backupFolder
-            Write-Host "Záloha: $file" -ForegroundColor Gray
-        }
+if (Test-Path $backupFolder) {
+    Remove-Item -Path $backupFolder -Recurse -Force
+}
+New-Item -Path $backupFolder -ItemType Directory | Out-Null
+Write-Host "Vytvorený záložný adresár: $backupFolder" -ForegroundColor Gray
+
+foreach ($file in $filesToBackup) {
+    if (Test-Path $file) {
+        Copy-Item $file -Destination $backupFolder
+        Write-Host "  Záloha: $file" -ForegroundColor Gray
     }
 }
 
-# 1. Aktualizovať version.json (hlavný zdroj verzie)
+# Počítadlo zmien
+$changesTotal = 0
+
+# === Pomocná funkcia na regex replace s počítaním ===
+function Update-FileContent {
+    param(
+        [string]$FilePath,
+        [string]$Pattern,
+        [string]$Replacement,
+        [string]$Description
+    )
+    $content = Get-Content -Path $FilePath -Raw -Encoding UTF8
+    $newContent = $content -replace $Pattern, $Replacement
+    if ($newContent -ne $content) {
+        Set-Content -Path $FilePath -Value $newContent -Encoding UTF8 -NoNewline
+        Write-Host "   [OK] $Description" -ForegroundColor Green
+        $script:changesTotal++
+        return $true
+    } else {
+        Write-Host "   [--] $Description (bez zmeny)" -ForegroundColor Yellow
+        return $false
+    }
+}
+
+# 1. version.json
 Write-Host "`n1. Aktualizácia version.json" -ForegroundColor Cyan
 $versionJsonPath = ".\version.json"
 if (Test-Path $versionJsonPath) {
     try {
-        # Načítať JSON ako objekt a aktualizovať hodnoty
         $json = Get-Content -Raw -Path $versionJsonPath | ConvertFrom-Json
         $oldVersion = $json.version
-        Write-Host "   • Aktuálna verzia: $oldVersion" -ForegroundColor Gray
-        Write-Host "   • Nová verzia: $NewVersion" -ForegroundColor Yellow
+        Write-Host "   Aktualna verzia: $oldVersion -> $NewVersion" -ForegroundColor Gray
         
         $json.version = $NewVersion
-        # Aktualizácia releaseDate na dnešný dátum
-        $json.releaseDate = Get-Date -Format 'yyyy-MM-dd'
-        # Aktualizácia vlastnosti notes (nie note)
-        $json.notes = "Aktualizácia na verziu $NewVersion z $(Get-Date -Format 'yyyy-MM-dd')"
+        $json.releaseDate = $today
+        $json.notes = "Aktualizácia na verziu $NewVersion z $today"
         
-        # Konvertovať späť na JSON a zapísať späť do súboru s rovnakým formátovaním
         $jsonString = $json | ConvertTo-Json -Depth 10
         Set-Content -Path $versionJsonPath -Value $jsonString -Encoding UTF8
-        
-        Write-Host "AKTUALIZOVANÉ: version.json" -ForegroundColor Green
+        Write-Host "   [OK] version, releaseDate, notes" -ForegroundColor Green
+        $changesTotal++
     } catch {
-        Write-Host "CHYBA pri aktualizácii version.json: $_" -ForegroundColor Red
+        Write-Host "   CHYBA: $_" -ForegroundColor Red
     }
 } else {
-    Write-Host "CHYBA: Súbor version.json neexistuje!" -ForegroundColor Red
+    Write-Host "   CHYBA: Súbor neexistuje!" -ForegroundColor Red
 }
 
-# 2. Aktualizovať sw.js - konštanta APP_VERSION
+# 2. sw.js – APP_VERSION
 Write-Host "`n2. Aktualizácia sw.js" -ForegroundColor Cyan
-$swJsPath = ".\sw.js"
-if (Test-Path $swJsPath) {
-    try {
-        $content = Get-Content -Path $swJsPath -Raw -Encoding UTF8
-        $oldContent = $content
-        $pattern = "const APP_VERSION = '[0-9]+\.[0-9]+\.[0-9]+';"
-        $replacement = "const APP_VERSION = '$NewVersion';"
-        $content = $content -replace $pattern, $replacement
-        
-        if ($content -ne $oldContent) {
-            Set-Content -Path $swJsPath -Value $content -Encoding UTF8
-            Write-Host "AKTUALIZOVANÉ: sw.js - konštanta APP_VERSION" -ForegroundColor Green
-        } else {
-            Write-Host "PRESKOČENÉ: sw.js - nenájdená konštanta APP_VERSION alebo už aktuálna" -ForegroundColor Yellow
-        }
-    } catch {
-        Write-Host "CHYBA pri aktualizácii sw.js: $_" -ForegroundColor Red
-    }
+if (Test-Path ".\sw.js") {
+    Update-FileContent -FilePath ".\sw.js" `
+        -Pattern "const APP_VERSION = '[0-9]+\.[0-9]+\.[0-9]+';" `
+        -Replacement "const APP_VERSION = '$NewVersion';" `
+        -Description "APP_VERSION"
 } else {
-    Write-Host "CHYBA: Súbor sw.js neexistuje!" -ForegroundColor Red
+    Write-Host "   CHYBA: Súbor neexistuje!" -ForegroundColor Red
 }
 
-# 3. Aktualizovať manifest.json
-Write-Host "`n3. Aktualizácia manifest.json" -ForegroundColor Cyan
-$manifestJsonPath = ".\manifest.json"
-if (Test-Path $manifestJsonPath) {
-    try {
-        $content = Get-Content -Path $manifestJsonPath -Raw -Encoding UTF8
-        $oldContent = $content
-        
-        # Aktualizácia verzie
-        $pattern1 = '"version"\s*:\s*"[0-9]+\.[0-9]+\.[0-9]+"'
-        $replacement1 = '"version": "' + $NewVersion + '"'
-        $content = $content -replace $pattern1, $replacement1
-        
-        # Aktualizácia start_url
-        $pattern2 = '"start_url"\s*:\s*"index\.html\?v=[0-9]+\.[0-9]+\.[0-9]+"'
-        $replacement2 = '"start_url": "index.html?v=' + $NewVersion + '"'
-        $content = $content -replace $pattern2, $replacement2
-        
-        # Aktualizácia url v shortcuts
-        $pattern3 = '"url"\s*:\s*"index\.html\?v=[0-9]+\.[0-9]+\.[0-9]+"'
-        $replacement3 = '"url": "index.html?v=' + $NewVersion + '"'
-        $content = $content -replace $pattern3, $replacement3
-        
-        if ($content -ne $oldContent) {
-            Set-Content -Path $manifestJsonPath -Value $content -Encoding UTF8
-            Write-Host "AKTUALIZOVANÉ: manifest.json" -ForegroundColor Green
-        } else {
-            Write-Host "PRESKOČENÉ: manifest.json - nenájdené všetky patterny alebo už aktuálne" -ForegroundColor Yellow
-        }
-    } catch {
-        Write-Host "CHYBA pri aktualizácii manifest.json: $_" -ForegroundColor Red
-    }
+# 3. index.html – všetky výskyty verzie
+Write-Host "`n3. Aktualizácia index.html" -ForegroundColor Cyan
+$indexPath = ".\index.html"
+if (Test-Path $indexPath) {
+    # manifest link cache-bust
+    Update-FileContent -FilePath $indexPath `
+        -Pattern 'manifest\.json\?v=[0-9]+\.[0-9]+\.[0-9]+' `
+        -Replacement "manifest.json?v=$NewVersion" `
+        -Description "manifest.json?v= cache-bust"
+
+    # SW registrácia cache-bust
+    Update-FileContent -FilePath $indexPath `
+        -Pattern "sw\.js\?v=[0-9]+\.[0-9]+\.[0-9]+" `
+        -Replacement "sw.js?v=$NewVersion" `
+        -Description "sw.js?v= cache-bust"
+
+    # APP_VERSION konštanta
+    Update-FileContent -FilePath $indexPath `
+        -Pattern "const APP_VERSION = '[0-9]+\.[0-9]+\.[0-9]+';" `
+        -Replacement "const APP_VERSION = '$NewVersion';" `
+        -Description "APP_VERSION konštanta"
+
+    # CSS obrázok cache-bust (pay-bottom-dark.png?v=)
+    Update-FileContent -FilePath $indexPath `
+        -Pattern "pay-bottom-dark\.png\?v=[0-9]+\.[0-9]+\.[0-9]+" `
+        -Replacement "pay-bottom-dark.png?v=$NewVersion" `
+        -Description "pay-bottom-dark.png?v= cache-bust"
+
+    # JSON-LD softwareVersion
+    Update-FileContent -FilePath $indexPath `
+        -Pattern '"softwareVersion"\s*:\s*"[0-9]+\.[0-9]+\.[0-9]+"' `
+        -Replacement "`"softwareVersion`": `"$NewVersion`"" `
+        -Description "JSON-LD softwareVersion"
+
+    # About modal fallback verzia
+    Update-FileContent -FilePath $indexPath `
+        -Pattern "\|\| '[0-9]+\.[0-9]+\.[0-9]+'" `
+        -Replacement "|| '$NewVersion'" `
+        -Description "About modal fallback verzia"
 } else {
-    Write-Host "CHYBA: Súbor manifest.json neexistuje!" -ForegroundColor Red
+    Write-Host "   CHYBA: Súbor neexistuje!" -ForegroundColor Red
 }
 
-# 4. Aktualizovať index.html
-Write-Host "`n4. Aktualizácia index.html" -ForegroundColor Cyan
-$indexHtmlPath = ".\index.html"
-if (Test-Path $indexHtmlPath) {
-    try {
-        $content = Get-Content -Path $indexHtmlPath -Raw -Encoding UTF8
-        $oldContent = $content
-        
-        # Aktualizácia linku na manifest
-        $pattern1 = '<link rel="manifest" href="manifest\.json\?v=[0-9]+\.[0-9]+\.[0-9]+">'
-        $replacement1 = '<link rel="manifest" href="manifest.json?v=' + $NewVersion + '">'
-        $content = $content -replace $pattern1, $replacement1
-        
-        # Aktualizácia service worker registrácie
-        $pattern2 = "navigator\.serviceWorker\.register\('sw\.js\?v=[0-9]+\.[0-9]+\.[0-9]+'\)"
-        $replacement2 = "navigator.serviceWorker.register('sw.js?v=$NewVersion')"
-        $content = $content -replace $pattern2, $replacement2
-        
-        # Aktualizácia konštanty APP_VERSION
-        $pattern3 = "const APP_VERSION = '[0-9]+\.[0-9]+\.[0-9]+';"
-        $replacement3 = "const APP_VERSION = '$NewVersion';"
-        $content = $content -replace $pattern3, $replacement3
-        
-        if ($content -ne $oldContent) {
-            Set-Content -Path $indexHtmlPath -Value $content -Encoding UTF8
-            Write-Host "AKTUALIZOVANÉ: index.html" -ForegroundColor Green
-        } else {
-            Write-Host "PRESKOČENÉ: index.html - nenájdené všetky patterny alebo už aktuálne" -ForegroundColor Yellow
-        }
-    } catch {
-        Write-Host "CHYBA pri aktualizácii index.html: $_" -ForegroundColor Red
-    }
+# 4. sitemap.xml – lastmod dátum
+Write-Host "`n4. Aktualizácia sitemap.xml" -ForegroundColor Cyan
+if (Test-Path ".\sitemap.xml") {
+    Update-FileContent -FilePath ".\sitemap.xml" `
+        -Pattern '<lastmod>[0-9]{4}-[0-9]{2}-[0-9]{2}</lastmod>' `
+        -Replacement "<lastmod>$today</lastmod>" `
+        -Description "lastmod dátum"
 } else {
-    Write-Host "CHYBA: Súbor index.html neexistuje!" -ForegroundColor Red
+    Write-Host "   CHYBA: Súbor neexistuje!" -ForegroundColor Red
 }
 
 # Zobraziť súhrn
-Write-Host "`n===== SÚHRN AKTUALIZÁCIE =====" -ForegroundColor Cyan
-Write-Host "Verzia aplikácie bola aktualizovaná na $NewVersion" -ForegroundColor Green
-Write-Host "`nNebudnite urobiť git commit, tag a push zmien!" -ForegroundColor Yellow
-Write-Host "git add version.json sw.js manifest.json index.html" -ForegroundColor Gray
-Write-Host "git commit -m `"Aktualizácia verzie na $NewVersion`"" -ForegroundColor Gray
-Write-Host "git tag -a v$NewVersion -m `"Verzia $NewVersion`"" -ForegroundColor Gray
-Write-Host "git push" -ForegroundColor Gray
-Write-Host "git push --tags" -ForegroundColor Gray
+Write-Host "`n===== SÚHRN =====" -ForegroundColor Cyan
+Write-Host "Verzia: $NewVersion | Dátum: $today | Zmien: $changesTotal" -ForegroundColor Green
+Write-Host "`nAktualizované súbory:" -ForegroundColor Gray
+Write-Host "  version.json, sw.js, index.html, sitemap.xml" -ForegroundColor Gray
+Write-Host "`nĎalšie kroky:" -ForegroundColor Yellow
+Write-Host "  git add -A" -ForegroundColor Gray
+Write-Host "  git commit -m `"v$NewVersion`"" -ForegroundColor Gray
+Write-Host "  git tag -a v$NewVersion -m `"Verzia $NewVersion`"" -ForegroundColor Gray
+Write-Host "  git push && git push --tags" -ForegroundColor Gray
 Write-Host "`n===== HOTOVO! =====" -ForegroundColor Cyan

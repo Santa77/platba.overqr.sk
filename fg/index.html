@@ -420,6 +420,47 @@
             -webkit-backdrop-filter: blur(12px);
         }
     </style>
+    <!-- Google Consent Mode v2 - MUSÍ byť pred GTM/gtag -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
+        // Načítame uložený súhlas z localStorage
+        const savedConsent = localStorage.getItem('cookieConsent');
+        if (savedConsent === 'granted') {
+            gtag('consent', 'default', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted',
+                'functionality_storage': 'granted',
+                'personalization_storage': 'granted',
+                'security_storage': 'granted'
+            });
+        } else if (savedConsent === 'analytics') {
+            gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'granted',
+                'functionality_storage': 'granted',
+                'personalization_storage': 'denied',
+                'security_storage': 'granted'
+            });
+        } else {
+            gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied',
+                'functionality_storage': 'granted',
+                'personalization_storage': 'denied',
+                'security_storage': 'granted',
+                'wait_for_update': 500
+            });
+        }
+    </script>
+
     <!-- Google Tag Manager -->
     <script>(function (w, d, s, l, i) {
             w[l] = w[l] || []; w[l].push({
@@ -433,10 +474,7 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6CLTP3Q8GS"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-6CLTP3Q8GS');
     </script>
     <!-- End Google Tag Manager -->
@@ -446,7 +484,73 @@
     <!-- Notifikácia o aktualizácii -->
     <div id="update-notification"
         class="hidden fixed top-0 left-0 right-0 bg-secondary-600 text-white text-center p-2 z-50"></div>
-        
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4"
+        style="background:rgba(30,30,50,0.97);backdrop-filter:blur(10px)">
+        <div class="max-w-xl mx-auto">
+            <div class="flex items-start gap-3 mb-3">
+                <i class="fas fa-cookie-bite text-yellow-400 text-xl mt-0.5 flex-shrink-0"></i>
+                <div>
+                    <h3 class="text-white font-semibold text-sm mb-1">Súhlas so spracovaním údajov</h3>
+                    <p class="text-gray-300 text-xs leading-relaxed">
+                        Táto aplikácia používa cookies a analytické nástroje (Google Analytics, GTM) na zlepšenie funkčnosti a analýzu používania.
+                        Vaše údaje spracúvame v súlade s <button onclick="showCookieDetails()" class="underline text-primary-300 hover:text-primary-200">pravidlami ochrany súkromia</button>.
+                        Súhlas môžete kedykoľvek zmeniť v Nastaveniach.
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <button onclick="acceptCookies()"
+                    class="flex-1 py-2 px-4 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                    <i class="fas fa-check mr-1"></i> Súhlasím so všetkými
+                </button>
+                <button onclick="acceptAnalyticsOnly()"
+                    class="flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white text-sm font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    <i class="fas fa-chart-bar mr-1"></i> Len analytické
+                </button>
+                <button onclick="rejectCookies()"
+                    class="flex-1 py-2 px-4 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium rounded-lg border border-gray-500 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    <i class="fas fa-times mr-1"></i> Odmietnuť
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Details Modal -->
+    <div id="cookie-details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+        <div class="bg-white rounded-lg max-w-md w-full mx-4 p-5 shadow-xl max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-shield-alt mr-2 text-primary-600"></i>Ochrana súkromia</h3>
+                <button onclick="closeCookieDetails()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="text-sm text-gray-600 space-y-3">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1"><i class="fas fa-cog mr-1 text-green-600"></i> Nevyhnutné (vždy aktívne)</h4>
+                    <p class="text-xs">Zabezpečujú základnú funkčnosť aplikácie – uloženie nastavení (IBAN, meno), variabilný symbol, offline režim. Bez nich by aplikácia nefungovala.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1"><i class="fas fa-chart-line mr-1 text-blue-600"></i> Analytické</h4>
+                    <p class="text-xs">Google Analytics zbiera anonymizované údaje o používaní aplikácie – počet návštev, doba používania, typ zariadenia. Pomáhajú nám zlepšovať aplikáciu.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1"><i class="fas fa-bullhorn mr-1 text-orange-600"></i> Marketingové</h4>
+                    <p class="text-xs">Údaje pre reklamné služby Google (ad_storage, ad_user_data, ad_personalization). Momentálne nepoužívame reklamné kampane, ale súhlas je potrebný pre úplnú funkčnosť GTM.</p>
+                </div>
+                <div class="pt-2 border-t border-gray-200">
+                    <h4 class="font-semibold text-gray-800 mb-1"><i class="fas fa-database mr-1 text-gray-600"></i> Aké údaje ukladáme lokálne?</h4>
+                    <p class="text-xs">Všetky platobné údaje (IBAN, meno, nastavenia) sú uložené <strong>výlučne vo vašom zariadení</strong> (localStorage). Žiadne platobné údaje neodosielame na server.</p>
+                </div>
+            </div>
+            <button onclick="closeCookieDetails()"
+                class="mt-4 w-full py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-medium focus:outline-none">
+                Rozumiem
+            </button>
+        </div>
+    </div>
+
     <!-- Modal okno pre chyby -->
     <div id="error-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
@@ -648,6 +752,20 @@
                         class="mt-4 py-2 px-3 bg-green-100 border border-green-300 text-green-700 text-center rounded-md hidden transition duration-300">
                         <i class="fas fa-check-circle mr-1"></i> Nastavenia boli úspešne uložené
                     </div>
+
+                    <!-- Správa cookies -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700"><i class="fas fa-cookie-bite mr-1 text-yellow-500"></i> Cookies a súkromie</p>
+                                <p id="consent-status-text" class="text-xs text-gray-500 mt-0.5">Stav: nezistený</p>
+                            </div>
+                            <button onclick="showConsentBanner()"
+                                class="py-1.5 px-3 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200 focus:outline-none">
+                                <i class="fas fa-pen mr-1"></i> Zmeniť
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -738,6 +856,95 @@
             el.textContent = email;
             el.href = `mailto:${email}?subject=${subject}`;
         });
+
+        // === Cookie Consent funkcie ===
+        function acceptCookies() {
+            gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted'
+            });
+            localStorage.setItem('cookieConsent', 'granted');
+            localStorage.setItem('cookieConsentType', 'all');
+            localStorage.setItem('cookieConsentDate', new Date().toISOString());
+            hideBanner();
+            updateConsentStatusText();
+            dataLayer.push({ 'event': 'cookie_consent_granted', 'consent_type': 'all' });
+        }
+
+        function acceptAnalyticsOnly() {
+            gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'granted'
+            });
+            localStorage.setItem('cookieConsent', 'analytics');
+            localStorage.setItem('cookieConsentType', 'analytics');
+            localStorage.setItem('cookieConsentDate', new Date().toISOString());
+            hideBanner();
+            updateConsentStatusText();
+            dataLayer.push({ 'event': 'cookie_consent_granted', 'consent_type': 'analytics_only' });
+        }
+
+        function rejectCookies() {
+            gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+            });
+            localStorage.setItem('cookieConsent', 'denied');
+            localStorage.setItem('cookieConsentType', 'denied');
+            localStorage.setItem('cookieConsentDate', new Date().toISOString());
+            hideBanner();
+            updateConsentStatusText();
+        }
+
+        function showConsentBanner() {
+            document.getElementById('cookie-consent-banner').classList.remove('hidden');
+        }
+
+        function hideBanner() {
+            document.getElementById('cookie-consent-banner').classList.add('hidden');
+        }
+
+        function showCookieDetails() {
+            document.getElementById('cookie-details-modal').classList.remove('hidden');
+        }
+
+        function closeCookieDetails() {
+            document.getElementById('cookie-details-modal').classList.add('hidden');
+        }
+
+        function updateConsentStatusText() {
+            const el = document.getElementById('consent-status-text');
+            if (!el) return;
+            const consent = localStorage.getItem('cookieConsent');
+            const date = localStorage.getItem('cookieConsentDate');
+            const dateStr = date ? ' (' + new Date(date).toLocaleDateString('sk-SK') + ')' : '';
+            if (consent === 'granted') {
+                el.textContent = 'Stav: všetky cookies povolené' + dateStr;
+            } else if (consent === 'analytics') {
+                el.textContent = 'Stav: len analytické' + dateStr;
+            } else if (consent === 'denied') {
+                el.textContent = 'Stav: cookies odmietnuté' + dateStr;
+            } else {
+                el.textContent = 'Stav: nerozhodnuté';
+            }
+        }
+
+        function initCookieConsent() {
+            const consent = localStorage.getItem('cookieConsent');
+            if (!consent) {
+                showConsentBanner();
+            }
+            updateConsentStatusText();
+        }
+
+        // Inicializácia cookie consent pri načítaní
+        document.addEventListener('DOMContentLoaded', initCookieConsent);
 
         function switchTab(tab) {
             // Skryjeme všetky formuláre

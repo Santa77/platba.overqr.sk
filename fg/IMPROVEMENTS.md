@@ -104,3 +104,25 @@ Tento dokument sleduje identifikované problémy a ich implementáciu v `index.h
 - **Problémy:** Crawl-delay spomaľoval Google, blokované icons, zastaraný sitemap
 - **Riešenie:** Odstránený Crawl-delay/Host, povolené icons, sitemap s 1 canonical URL a aktuálnym dátumom
 - **Stav:** ✅ DONE
+
+## Krok E – Cookie Consent & GDPR
+
+### E1: Google Consent Mode v2
+- **Problémy:** Žiadny consent management, GTM/GA zbierali údaje bez súhlasu používateľa
+- **Riešenie:** Implementovaný `gtag('consent', 'default', {...})` pred GTM/gtag s 3 stavmi: granted, analytics, denied. Consent defaults sa načítavajú z localStorage pri každom načítaní stránky. `wait_for_update: 500` pre prípad asynchrónneho banneru.
+- **Stav:** ✅ DONE
+
+### E2: Cookie Consent Banner
+- **Problémy:** Žiadny cookie banner, nesúlad s GDPR/ePrivacy
+- **Riešenie:** Fixný banner na spodku stránky s 3 možnosťami: „Súhlasím so všetkými" (ad+analytics), „Len analytické" (len analytics_storage), „Odmietnuť" (všetko denied). Banner sa zobrazí len ak nie je uložený súhlas. Informácia o možnosti zmeny v Nastaveniach.
+- **Stav:** ✅ DONE
+
+### E3: Cookie Details Modal
+- **Problémy:** Používateľ nemal informáciu o tom, aké cookies/údaje sa zbierajú
+- **Riešenie:** Modal „Ochrana súkromia" s 4 kategóriami: Nevyhnutné (vždy aktívne), Analytické (GA), Marketingové (ads), Lokálne údaje (localStorage info). Prístupný z banneru aj z Nastavení.
+- **Stav:** ✅ DONE
+
+### E4: Správa cookies v Nastaveniach
+- **Problémy:** Používateľ nemohol zmeniť rozhodnutie o cookies po prvom výbere
+- **Riešenie:** Sekcia „Cookies a súkromie" v záložke Nastavenia s aktuálnym stavom súhlasu (typ + dátum) a tlačidlom „Zmeniť" pre opätovné zobrazenie banneru.
+- **Stav:** ✅ DONE
